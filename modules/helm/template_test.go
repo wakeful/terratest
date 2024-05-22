@@ -106,7 +106,7 @@ func TestRemoteChartRenderDump(t *testing.T) {
 	// write chart manifest to a local filesystem directory
 	options = &Options{
 		Logger:       logger.Default,
-		SnapshotPath: t.TempDir(),
+		SnapshotPath: "__chart_render_dump_manifests_snapshot__",
 	}
 	UpdateSnapshot(t, options, output, releaseName)
 }
@@ -130,7 +130,7 @@ func TestRemoteChartRenderDiff(t *testing.T) {
 		},
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		Logger:         logger.Discard,
-		SnapshotPath:   t.TempDir(),
+		SnapshotPath:   "__chart_remote_manifests_snapshot__",
 	}
 
 	// Run RenderTemplate to render the template and capture the output. Note that we use the version without `E`, since
