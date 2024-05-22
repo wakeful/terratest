@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"sync"
 	"time"
 
@@ -267,5 +266,10 @@ func formatPackerArgs(options *Options) []string {
 
 // From packer 1.10 the -version command output is prefixed with Packer v
 func trimPackerVersion(versionCmdOutput string) string {
-	return strings.Replace(versionCmdOutput, "Packer v", "", -1)
+	re := regexp.MustCompile(`(?:Packer v?|)(\d+\.\d+\.\d+)`)
+	matches := re.FindStringSubmatch(versionCmdOutput)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return ""
 }

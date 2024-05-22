@@ -192,10 +192,17 @@ func TestTrimPackerVersion(t *testing.T) {
 			versionOutput: "Packer v1.10.0",
 			expected:      "1.10.0",
 		},
+		{
+			// From 1.10 matches the output of packer version
+			versionOutput: "Packer v1.10.0\n\nYour version of Packer is out of date! The latest version\nis 1.10.3. You can update by downloading from www.packer.io/downloads\n",
+			expected:      "1.10.0",
+		},
 	}
 
 	for _, test := range tests {
-		out := trimPackerVersion(test.versionOutput)
-		assert.Equal(t, test.expected, out)
+		t.Run(test.versionOutput, func(t *testing.T) {
+			out := trimPackerVersion(test.versionOutput)
+			assert.Equal(t, test.expected, out)
+		})
 	}
 }
