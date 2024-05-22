@@ -117,7 +117,7 @@ func TestRemoteChartRenderDiff(t *testing.T) {
 		remoteChartSource  = "https://charts.bitnami.com/bitnami"
 		remoteChartName    = "nginx"
 		remoteChartVersion = "13.2.24"
-		// need to set a fix name for the namespace so it is not flag as a difference
+		// need to set a fix name for the namespace, so it is not flag as a difference
 		namespaceName = "dump-ns"
 	)
 

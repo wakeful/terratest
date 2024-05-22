@@ -29,7 +29,7 @@ resource "aws_lambda_function" "lambda" {
   function_name    = var.function_name
   role             = aws_iam_role.lambda.arn
   handler          = "lambda"
-  runtime          = "go1.x"
+  runtime          = "provided.al2023"
 }
 
 resource "aws_iam_role" "lambda" {
