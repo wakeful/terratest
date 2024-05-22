@@ -3,6 +3,7 @@ env: &env
     GRUNTWORK_INSTALLER_VERSION: v0.0.36
     MODULE_CI_VERSION: v0.46.0
     MODULE_GCP_CI_VERSION: v0.1.1
+    MODULE_CI_CIRCLECI_HELPER_VERSION: v0.56.0
     TERRAFORM_VERSION: 1.5.7
     PACKER_VERSION: 1.7.4
     TERRAGRUNT_VERSION: v0.52.0
@@ -14,6 +15,10 @@ env: &env
     HELM_VERSION: v3.13.1
     KUBECONFIG: /home/circleci/.kube/config
     BIN_BUILD_PARALLELISM: 3
+    MISE_VERSION: v2024.4.0
+    # Mise ASDF defaults to using main.tf to determine the terraform version to use, so we need to
+    # override this to use the .terraform-version file instead.
+    ASDF_HASHICORP_TERRAFORM_VERSION_FILE: .terraform-version
 
 defaults: &defaults
   machine:
@@ -40,10 +45,11 @@ install_gruntwork_utils: &install_gruntwork_utils
   name: install gruntwork utils
   command: |
     curl -Ls https://raw.githubusercontent.com/gruntwork-io/gruntwork-installer/master/bootstrap-gruntwork-installer.sh | bash /dev/stdin --version "${GRUNTWORK_INSTALLER_VERSION}"
-    gruntwork-install --module-name "gruntwork-module-circleci-helpers" --repo "https://github.com/gruntwork-io/terraform-aws-ci" --tag "${MODULE_CI_VERSION}"
+    gruntwork-install --module-name "gruntwork-module-circleci-helpers" --repo "https://github.com/gruntwork-io/terraform-aws-ci" --tag "${MODULE_CI_CIRCLECI_HELPER_VERSION}"
     gruntwork-install --module-name "kubernetes-circleci-helpers" --repo "https://github.com/gruntwork-io/terraform-aws-ci" --tag "${MODULE_CI_VERSION}"
     gruntwork-install --module-name "gcp-helpers" --repo "https://github.com/gruntwork-io/terraform-google-ci" --tag "${MODULE_GCP_CI_VERSION}"
     configure-environment-for-gruntwork-module \
+      --mise-version ${MISE_VERSION} \
       --terraform-version ${TERRAFORM_VERSION} \
       --terragrunt-version ${TERRAGRUNT_VERSION} \
       --packer-version ${PACKER_VERSION} \
