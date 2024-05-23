@@ -3,5 +3,5 @@
 The lambda executable `handler` was built using
 
 ``` shell
-go build lambda.go
+go build bootstrap.go
 ```
