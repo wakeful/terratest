@@ -121,7 +121,7 @@ func TestGetRecommendedRdsInstanceTypeErrors(t *testing.T) {
 			name:                  "No instance type available for engine",
 			region:                "us-east-1",
 			databaseEngine:        "oracle-ee",
-			databaseEngineVersion: "19.0.0.0.ru-2021-01.rur-2021-01.r1",
+			databaseEngineVersion: "21.0.0.0.ru-2023-07.rur-2023-07.r1",
 			instanceTypes:         []string{"db.r5a.large"},
 		},
 		{
