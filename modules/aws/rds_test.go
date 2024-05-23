@@ -115,7 +115,7 @@ func TestGetRecommendedRdsInstanceTypeErrors(t *testing.T) {
 			region:                "eu-north-1",
 			databaseEngine:        "mysql",
 			databaseEngineVersion: "8.0.32",
-			instanceTypes:         []string{"db.t2.micro"},
+			instanceTypes:         []string{"db.t3.micro"},
 		},
 		{
 			name:                  "No instance type available for engine",
