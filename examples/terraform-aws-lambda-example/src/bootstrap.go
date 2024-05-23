@@ -13,7 +13,10 @@ type Event struct {
 }
 
 // Fails if ShouldFail is `true`, otherwise echos the input.
-func HandleRequest(ctx context.Context, evnt Event) (string, error) {
+func HandleRequest(ctx context.Context, evnt *Event) (string, error) {
+	if evnt == nil {
+		return "", fmt.Errorf("received nil event")
+	}
 	if evnt.ShouldFail {
 		return "", fmt.Errorf("Failed to handle %#v", evnt)
 	}

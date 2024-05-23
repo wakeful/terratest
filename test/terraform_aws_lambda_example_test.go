@@ -63,7 +63,7 @@ func TestTerraformAwsLambdaExample(t *testing.T) {
 	assert.Contains(t, string(functionError.Payload), "Failed to handle")
 }
 
-// Annother example of how to test the Terraform module in
+// Another example of how to test the Terraform module in
 // examples/terraform-aws-lambda-example using Terratest, this time with
 // the aws.InvokeFunctionWithParams.
 func TestTerraformAwsLambdaWithParamsExample(t *testing.T) {
