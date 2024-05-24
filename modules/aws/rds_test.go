@@ -23,8 +23,8 @@ func TestGetRecommendedRdsInstanceTypeHappyPath(t *testing.T) {
 			region:             "us-east-2",
 			databaseEngine:     "mysql",
 			engineMajorVersion: "8.0",
-			instanceTypes:      []string{"db.t2.micro", "db.t3.micro", "db.t3.small"},
-			expected:           "db.t3.micro",
+			instanceTypes:      []string{"db.t4g.micro", "db.t4g.small"},
+			expected:           "db.t4g.micro",
 		},
 		{
 			name:               "EU region, postgres, 2nd offering available based on region",
