@@ -77,7 +77,7 @@ func RenderTemplateE(t testing.TestingT, options *Options, chartDir string, rele
 	return RunHelmCommandAndGetStdOutE(t, options, "template", args...)
 }
 
-// RenderTemplate runs `helm template` to render a *remote* chart  given the provided options and returns stdout/stderr from
+// RenderRemoteTemplate runs `helm template` to render a *remote* chart  given the provided options and returns stdout/stderr from
 // the template command. If you pass in templateFiles, this will only render those templates. This function will fail
 // the test if there is an error rendering the template.
 func RenderRemoteTemplate(t testing.TestingT, options *Options, chartURL string, releaseName string, templateFiles []string, extraHelmArgs ...string) string {
@@ -86,7 +86,7 @@ func RenderRemoteTemplate(t testing.TestingT, options *Options, chartURL string,
 	return out
 }
 
-// RenderTemplate runs `helm template` to render a *remote* helm chart  given the provided options and returns stdout/stderr from
+// RenderRemoteTemplateE runs `helm template` to render a *remote* helm chart  given the provided options and returns stdout/stderr from
 // the template command. If you pass in templateFiles, this will only render those templates.
 func RenderRemoteTemplateE(t testing.TestingT, options *Options, chartURL string, releaseName string, templateFiles []string, extraHelmArgs ...string) (string, error) {
 	// Now construct the args

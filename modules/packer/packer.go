@@ -186,10 +186,11 @@ func hasPackerInit(t testing.TestingT, options *Options) (bool, error) {
 		Env:        options.Env,
 		WorkingDir: options.WorkingDir,
 	}
-	localVersion, err := shell.RunCommandAndGetOutputE(t, cmd)
+	versionCmdOutput, err := shell.RunCommandAndGetOutputE(t, cmd)
 	if err != nil {
 		return false, err
 	}
+	localVersion := trimPackerVersion(versionCmdOutput)
 	thisVersion, err := version.NewVersion(localVersion)
 	if err != nil {
 		return false, err
@@ -261,4 +262,14 @@ func formatPackerArgs(options *Options) []string {
 	}
 
 	return append(args, options.Template)
+}
+
+// From packer 1.10 the -version command output is prefixed with Packer v
+func trimPackerVersion(versionCmdOutput string) string {
+	re := regexp.MustCompile(`(?:Packer v?|)(\d+\.\d+\.\d+)`)
+	matches := re.FindStringSubmatch(versionCmdOutput)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return ""
 }

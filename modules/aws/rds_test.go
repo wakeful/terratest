@@ -23,8 +23,8 @@ func TestGetRecommendedRdsInstanceTypeHappyPath(t *testing.T) {
 			region:             "us-east-2",
 			databaseEngine:     "mysql",
 			engineMajorVersion: "8.0",
-			instanceTypes:      []string{"db.t2.micro", "db.t3.micro", "db.t3.small"},
-			expected:           "db.t2.micro",
+			instanceTypes:      []string{"db.t4g.micro", "db.t4g.small"},
+			expected:           "db.t4g.micro",
 		},
 		{
 			name:               "EU region, postgres, 2nd offering available based on region",
@@ -121,7 +121,7 @@ func TestGetRecommendedRdsInstanceTypeErrors(t *testing.T) {
 			name:                  "No instance type available for engine",
 			region:                "us-east-1",
 			databaseEngine:        "oracle-ee",
-			databaseEngineVersion: "19.0.0.0.ru-2021-01.rur-2021-01.r1",
+			databaseEngineVersion: "19.0.0.0.ru-2024-04.rur-2024-04.r1",
 			instanceTypes:         []string{"db.r5a.large"},
 		},
 		{
