@@ -30,6 +30,7 @@ func TestGetVpcById(t *testing.T) {
 
 	vpcTest := GetVpcById(t, *vpc.VpcId, region)
 	assert.Equal(t, *vpc.VpcId, vpcTest.Id)
+	assert.NotEmpty(t, vpcTest.CidrAssociations)
 }
 
 func TestGetVpcsE(t *testing.T) {
