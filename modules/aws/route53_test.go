@@ -70,15 +70,15 @@ func TestRoute53Record(t *testing.T) {
 	})
 
 	t.Run("ExistingRecord", func(t *testing.T) {
-		route53Record := GetRoute53Record(t, *hostedZone.HostedZone.Id, recordName, region)
+		route53Record := GetRoute53Record(t, *hostedZone.HostedZone.Id, recordName, *resourceRecordSet.Type, region)
 		require.NotNil(t, route53Record)
 		assert.Equal(t, recordName+".", *route53Record.Name)
-		assert.Equal(t, "A", *route53Record.Type)
+		assert.Equal(t, *resourceRecordSet.Type, *route53Record.Type)
 		assert.Equal(t, "127.0.0.1", *route53Record.ResourceRecords[0].Value)
 	})
 
 	t.Run("NotExistRecord", func(t *testing.T) {
-		route53Record, err := GetRoute53RecordE(t, *hostedZone.HostedZone.Id, "ne"+recordName, region)
+		route53Record, err := GetRoute53RecordE(t, *hostedZone.HostedZone.Id, "ne"+recordName, "A", region)
 		assert.Error(t, err)
 		assert.Nil(t, route53Record)
 	})

@@ -10,14 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func GetRoute53Record(t *testing.T, hostedZoneID, recordName, awsRegion string) *route53.ResourceRecordSet {
-	r, err := GetRoute53RecordE(t, hostedZoneID, recordName, awsRegion)
+// GetRoute53Record returns a Route 53 Record
+func GetRoute53Record(t *testing.T, hostedZoneID, recordName, recordType, awsRegion string) *route53.ResourceRecordSet {
+	r, err := GetRoute53RecordE(t, hostedZoneID, recordName, recordType, awsRegion)
 	require.NoError(t, err)
 
 	return r
 }
 
-func GetRoute53RecordE(t *testing.T, hostedZoneID, recordName, awsRegion string) (record *route53.ResourceRecordSet, err error) {
+// GetRoute53RecordE returns a Route 53 Record
+func GetRoute53RecordE(t *testing.T, hostedZoneID, recordName, recordType, awsRegion string) (record *route53.ResourceRecordSet, err error) {
 	route53Client, err := NewRoute53ClientE(t, awsRegion)
 	if err != nil {
 		return nil, err
@@ -26,7 +28,7 @@ func GetRoute53RecordE(t *testing.T, hostedZoneID, recordName, awsRegion string)
 	o, err := route53Client.ListResourceRecordSets(&route53.ListResourceRecordSetsInput{
 		HostedZoneId:    &hostedZoneID,
 		StartRecordName: &recordName,
-		StartRecordType: proto.String("A"),
+		StartRecordType: &recordType,
 		MaxItems:        proto.String("1"),
 	})
 	if err != nil {
@@ -44,7 +46,15 @@ func GetRoute53RecordE(t *testing.T, hostedZoneID, recordName, awsRegion string)
 	return
 }
 
-// NewS3ClientE creates an S3 client.
+// NewRoute53ClientE creates a route 53 client.
+func NewRoute53Client(t *testing.T, region string) *route53.Route53 {
+	c, err := NewRoute53ClientE(t, region)
+	require.NoError(t, err)
+
+	return c
+}
+
+// NewRoute53ClientE creates a route 53 client.
 func NewRoute53ClientE(t *testing.T, region string) (*route53.Route53, error) {
 	sess, err := NewAuthenticatedSession(region)
 	if err != nil {
