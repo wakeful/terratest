@@ -156,14 +156,6 @@ func defaultTerraformExecutable() string {
 	return TofuDefaultPath
 }
 
-var warningRe = func() *regexp.Regexp {
-	re, err := regexp.Compile("\nWarning: .*\n")
-	if err != nil {
-		panic(err)
-	}
-	return re
-}()
-
 func hasWarning(opts *Options, out string) error {
 	for k, v := range opts.WarningsAsErrors {
 		str := fmt.Sprintf("\nWarning: %s[^\n]*\n", k)
