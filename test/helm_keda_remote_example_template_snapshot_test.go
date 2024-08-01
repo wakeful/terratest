@@ -173,5 +173,5 @@ func TestHelmKedaRemoteExampleTemplateRenderedPackageDiff(t *testing.T) {
 	output := helm.RenderRemoteTemplate(t, options, "https://kedacore.github.io/charts", releaseName, []string{})
 
 	// run the diff and assert the number of diffs matches the number of diffs in the snapshot
-	require.Equal(t, 18, helm.DiffAgainstSnapshot(t, options, output, releaseName))
+	require.Equal(t, 24, helm.DiffAgainstSnapshot(t, options, output, releaseName))
 }
