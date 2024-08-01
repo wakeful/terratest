@@ -100,6 +100,10 @@ func (options *Options) Clone() (*Options, error) {
 	for key, val := range options.RetryableTerraformErrors {
 		newOptions.RetryableTerraformErrors[key] = val
 	}
+	newOptions.WarningsAsErrors = make(map[string]string)
+	for key, val := range options.WarningsAsErrors {
+		newOptions.WarningsAsErrors[key] = val
+	}
 
 	return newOptions, nil
 }
