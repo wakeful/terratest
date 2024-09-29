@@ -18,7 +18,7 @@ func TestTerraformAwsRdsExample(t *testing.T) {
 	// Give this RDS Instance a unique ID for a name tag so we can distinguish it from any other RDS Instance running
 	// in your AWS account
 	expectedName := fmt.Sprintf("terratest-aws-rds-example-%s", strings.ToLower(random.UniqueId()))
-	expectedPort := int64(3306)
+	expectedPort := int32(3306)
 	expectedDatabaseName := "terratest"
 	username := "username"
 	password := "password"
