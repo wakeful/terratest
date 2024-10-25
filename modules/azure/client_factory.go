@@ -919,7 +919,7 @@ func CreateDataFactoriesClientE(subscriptionID string) (*datafactory.FactoriesCl
 // CreatePrivateDnsZonesClientE is a helper function that will setup a private DNS zone client.
 func CreatePrivateDnsZonesClientE(subscriptionID string) (*privatedns.PrivateZonesClient, error) {
 	// Validate Azure subscription ID
-	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	subID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
@@ -931,7 +931,7 @@ func CreatePrivateDnsZonesClientE(subscriptionID string) (*privatedns.PrivateZon
 	}
 
 	// Create a private DNS zone client
-	privateZonesClient := privatedns.NewPrivateZonesClientWithBaseURI(baseURI, subscriptionID)
+	privateZonesClient := privatedns.NewPrivateZonesClientWithBaseURI(baseURI, subID)
 
 	// Create an authorizer
 	authorizer, err := NewAuthorizer()
