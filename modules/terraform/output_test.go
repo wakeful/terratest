@@ -2,7 +2,10 @@ package terraform
 
 import (
 	"fmt"
+	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/stretchr/testify/require"
@@ -432,4 +435,27 @@ func TestOutputsForKeysError(t *testing.T) {
 	_, err = OutputForKeysE(t, options, []string{"random_key"})
 
 	require.Error(t, err)
+}
+
+func TestTgOutputJsonParsing(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-output-map", t.Name())
+	require.NoError(t, err)
+
+	WriteFile(t, filepath.Join(testFolder, "terragrunt.hcl"), []byte{})
+
+	options := &Options{
+		TerraformDir:    testFolder,
+		TerraformBinary: "terragrunt",
+	}
+
+	InitAndApply(t, options)
+
+	output, err := OutputAllE(t, options)
+
+	require.NoError(t, err)
+	assert.NotNil(t, output)
+	assert.NotEmpty(t, output)
+	assert.Contains(t, output, "mogwai")
 }
