@@ -34,6 +34,40 @@ func TestOutputString(t *testing.T) {
 
 	num1 := Output(t, options, "number1")
 	require.Equal(t, num1, "3", "Number %q should match %q", "3", num1)
+
+	unicodeString := Output(t, options, "unicode_string")
+	require.Equal(t, "söme chäräcter", unicodeString)
+}
+
+func TestTgOutputString(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-output", t.Name())
+	require.NoError(t, err)
+
+	WriteFile(t, filepath.Join(testFolder, "terragrunt.hcl"), []byte{})
+
+	options := &Options{
+		TerraformDir:    testFolder,
+		TerraformBinary: "terragrunt",
+	}
+
+	InitAndApply(t, options)
+
+	b := Output(t, options, "bool")
+	require.Equal(t, b, "true", "Bool %q should match %q", "true", b)
+
+	str := Output(t, options, "string")
+	require.Equal(t, str, "This is a string.", "String %q should match %q", "This is a string.", str)
+
+	num := Output(t, options, "number")
+	require.Equal(t, num, "3.14", "Number %q should match %q", "3.14", num)
+
+	num1 := Output(t, options, "number1")
+	require.Equal(t, num1, "3", "Number %q should match %q", "3", num1)
+
+	unicodeString := Output(t, options, "unicode_string")
+	require.Equal(t, "söme chäräcter", unicodeString)
 }
 
 func TestOutputList(t *testing.T) {
@@ -313,6 +347,11 @@ func TestOutputJson(t *testing.T) {
     "sensitive": false,
     "type": "string",
     "value": "This is a string."
+  },
+  "unicode_string": {
+    "sensitive": false,
+    "type": "string",
+    "value": "söme chäräcter"
   }
 }`
 
