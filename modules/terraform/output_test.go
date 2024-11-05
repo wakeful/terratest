@@ -458,4 +458,5 @@ func TestTgOutputJsonParsing(t *testing.T) {
 	assert.NotNil(t, output)
 	assert.NotEmpty(t, output)
 	assert.Contains(t, output, "mogwai")
+	assert.Equal(t, "söme chäräcter", output["not_a_map_unicode"])
 }
