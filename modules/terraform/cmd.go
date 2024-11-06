@@ -51,7 +51,6 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 
 	if options.TerraformBinary == "terragrunt" {
 		args = append(args, "--terragrunt-non-interactive")
-		args = append(args, "--terragrunt-forward-tf-stdout")
 	}
 
 	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {
