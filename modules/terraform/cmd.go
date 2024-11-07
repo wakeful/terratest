@@ -51,7 +51,10 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 
 	if options.TerraformBinary == "terragrunt" {
 		args = append(args, "--terragrunt-non-interactive")
-		args = append(args, "--terragrunt-log-level", "warn")
+		_, formattingIset := options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"]
+		if !formattingIset {
+			options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"] = "true"
+		}
 	}
 
 	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {

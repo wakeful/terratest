@@ -13,6 +13,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const skipJsonLogLine = "log=info msg="
+
+var ansiLineRegex = regexp.MustCompile(`(?m)^\x1b\[[0-9;]*m.*`)
+
 // Output calls terraform output for the given variable and return its string value representation.
 // It only designed to work with primitive terraform types: string, number and bool.
 // Please use OutputStruct for anything else.
@@ -357,24 +361,29 @@ func OutputAllE(t testing.TestingT, options *Options) (map[string]interface{}, e
 
 // clean the ANSI characters from the JSON and update formating
 func cleanJson(input string) (string, error) {
-	ansiLineRegex := regexp.MustCompile(`(?m)^\x1b\[[0-9;]*m.*`)
+	// Remove ANSI escape codes
 	cleaned := ansiLineRegex.ReplaceAllString(input, "")
+
 	lines := strings.Split(cleaned, "\n")
 	var result []string
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
-		if trimmed != "" {
+		if trimmed != "" && !strings.Contains(trimmed, skipJsonLogLine) {
 			result = append(result, trimmed)
 		}
 	}
 	ansiClean := strings.Join(result, "\n")
+
 	var jsonObj interface{}
 	if err := json.Unmarshal([]byte(ansiClean), &jsonObj); err != nil {
 		return "", err
 	}
+
+	// Format JSON output with indentation
 	normalized, err := json.MarshalIndent(jsonObj, "", "  ")
 	if err != nil {
 		return "", err
 	}
+
 	return string(normalized), nil
 }
