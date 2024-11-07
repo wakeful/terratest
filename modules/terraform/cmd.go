@@ -39,6 +39,9 @@ const (
 
 	// TerraformDefaultPath to run terraform
 	TerraformDefaultPath = "terraform"
+
+	// TerragruntDefaultPath to run terragrunt
+	TerragruntDefaultPath = "terragrunt"
 )
 
 var DefaultExecutable = defaultTerraformExecutable()
@@ -49,8 +52,12 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		options.TerraformBinary = DefaultExecutable
 	}
 
-	if options.TerraformBinary == "terragrunt" {
+	if options.TerraformBinary == TerragruntDefaultPath {
 		args = append(args, "--terragrunt-non-interactive")
+		// for newer Terragrunt version, setting simplified log formatting
+		if options.EnvVars == nil {
+			options.EnvVars = map[string]string{}
+		}
 		_, formattingIset := options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"]
 		if !formattingIset {
 			options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"] = "true"
