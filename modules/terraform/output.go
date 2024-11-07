@@ -13,9 +13,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const skipJsonLogLine = "log=info msg="
+const skipJsonLogLine = " msg="
 
-var ansiLineRegex = regexp.MustCompile(`(?m)^\x1b\[[0-9;]*m.*`)
+var (
+	ansiLineRegex = regexp.MustCompile(`(?m)^\x1b\[[0-9;]*m.*`)
+	tgLogLevel    = regexp.MustCompile(`.*time=\S+ level=\S+ prefix=\S+ binary=\S+ msg=.*`)
+)
 
 // Output calls terraform output for the given variable and return its string value representation.
 // It only designed to work with primitive terraform types: string, number and bool.
@@ -363,6 +366,7 @@ func OutputAllE(t testing.TestingT, options *Options) (map[string]interface{}, e
 func cleanJson(input string) (string, error) {
 	// Remove ANSI escape codes
 	cleaned := ansiLineRegex.ReplaceAllString(input, "")
+	cleaned = tgLogLevel.ReplaceAllString(cleaned, "")
 
 	lines := strings.Split(cleaned, "\n")
 	var result []string

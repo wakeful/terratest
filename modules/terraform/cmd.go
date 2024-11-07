@@ -58,8 +58,8 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		if options.EnvVars == nil {
 			options.EnvVars = map[string]string{}
 		}
-		_, formattingIset := options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"]
-		if !formattingIset {
+		_, tgLogSet := options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"]
+		if !tgLogSet {
 			options.EnvVars["TERRAGRUNT_DISABLE_LOG_FORMATTING"] = "true"
 		}
 	}
