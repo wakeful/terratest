@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/rds"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gruntwork-io/terratest/modules/testing"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 )
 
@@ -70,6 +71,36 @@ func GetWhetherSchemaExistsInRdsMySqlInstanceE(t testing.TestingT, dbUrl string,
 		schemaName string
 	)
 	sqlStatement := "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=?;"
+	row := db.QueryRow(sqlStatement, expectedSchemaName)
+	scanErr := row.Scan(&schemaName)
+	if scanErr != nil {
+		return false, scanErr
+	}
+	return true, nil
+}
+
+// GetWhetherSchemaExistsInRdsPostgresInstance checks whether the specified schema/table name exists in the RDS instance
+func GetWhetherSchemaExistsInRdsPostgresInstance(t testing.TestingT, dbUrl string, dbPort int64, dbUsername string, dbPassword string, expectedSchemaName string) bool {
+	output, err := GetWhetherSchemaExistsInRdsPostgresInstanceE(t, dbUrl, dbPort, dbUsername, dbPassword, expectedSchemaName)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return output
+}
+
+// GetWhetherSchemaExistsInRdsPostgresInstanceE checks whether the specified schema/table name exists in the RDS instance
+func GetWhetherSchemaExistsInRdsPostgresInstanceE(t testing.TestingT, dbUrl string, dbPort int64, dbUsername string, dbPassword string, expectedSchemaName string) (bool, error) {
+	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s", dbUrl, dbPort, dbUsername, dbPassword, expectedSchemaName)
+
+	db, connErr := sql.Open("pgx", connectionString)
+	if connErr != nil {
+		return false, connErr
+	}
+	defer db.Close()
+	var (
+		schemaName string
+	)
+	sqlStatement := `SELECT "catalog_name" FROM "information_schema"."schemata" where catalog_name=$1`
 	row := db.QueryRow(sqlStatement, expectedSchemaName)
 	scanErr := row.Scan(&schemaName)
 	if scanErr != nil {
