@@ -36,7 +36,7 @@ require (
 	github.com/tmccombs/hcl2json v0.3.3
 	github.com/urfave/cli v1.22.2
 	github.com/zclconf/go-cty v1.9.1
-	golang.org/x/crypto v0.21.0
+	golang.org/x/crypto v0.27.0
 	golang.org/x/net v0.23.0
 	golang.org/x/oauth2 v0.8.0
 	google.golang.org/api v0.114.0
@@ -51,6 +51,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/gonvenience/ytbx v1.4.4
 	github.com/homeport/dyff v1.6.0
+	github.com/jackc/pgx/v5 v5.7.1
 	github.com/slack-go/slack v0.10.3
 	gotest.tools/v3 v3.0.3
 )
@@ -101,6 +102,9 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -129,10 +133,10 @@ require (
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/virtuald/go-ordered-json v0.0.0-20170621173500-b18e6e673d74 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/sync v0.4.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/term v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/term v0.24.0 // indirect
+	golang.org/x/text v0.18.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

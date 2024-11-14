@@ -65,12 +65,15 @@ resource "aws_db_option_group" "example" {
     Name = var.name
   }
 
-  option {
-    option_name = "MARIADB_AUDIT_PLUGIN"
+  dynamic "option" {
+    for_each = var.engine_name == "mysql" ? [1] : []
+    content {
+      option_name = "MARIADB_AUDIT_PLUGIN"
 
-    option_settings {
-      name  = "SERVER_AUDIT_EVENTS"
-      value = "CONNECT"
+      option_settings {
+        name  = "SERVER_AUDIT_EVENTS"
+        value = "CONNECT"
+      }
     }
   }
 }
@@ -83,9 +86,13 @@ resource "aws_db_parameter_group" "example" {
     Name = var.name
   }
 
-  parameter {
-    name  = "general_log"
-    value = "0"
+  dynamic "parameter" {
+    for_each = var.engine_name == "mysql" ? [1] : []
+    content {
+      name  = "general_log"
+      value = "0"
+
+    }
   }
 }
 
