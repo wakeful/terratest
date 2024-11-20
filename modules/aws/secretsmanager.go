@@ -57,6 +57,26 @@ func GetSecretValueE(t testing.TestingT, awsRegion, id string) (string, error) {
 	return aws.StringValue(secret.SecretString), nil
 }
 
+// UpdateSecretString updates a secret in Secrets Manager to a new string value
+func PutSecretString(t testing.TestingT, awsRegion, id string, secretString string) {
+	err := PutSecretStringE(t, awsRegion, id, secretString)
+	require.NoError(t, err)
+}
+
+// UpdateSecretStringE updates a secret in Secrets Manager to a new string value
+func PutSecretStringE(t testing.TestingT, awsRegion, id string, secretString string) error {
+	logger.Default.Logf(t, "Updating secret with ID %s", id)
+
+	client := NewSecretsManagerClient(t, awsRegion)
+
+	_, err := client.PutSecretValue(&secretsmanager.PutSecretValueInput{
+		SecretId:     aws.String(id),
+		SecretString: aws.String(secretString),
+	})
+
+	return err
+}
+
 // DeleteSecret deletes a secret. If forceDelete is true, the secret will be deleted after a short delay. If forceDelete is false, the secret will be deleted after a 30 day recovery window.
 func DeleteSecret(t testing.TestingT, awsRegion, id string, forceDelete bool) {
 	err := DeleteSecretE(t, awsRegion, id, forceDelete)
