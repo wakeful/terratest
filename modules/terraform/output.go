@@ -16,8 +16,10 @@ import (
 const skipJsonLogLine = " msg="
 
 var (
+	// ansiLineRegex matches lines starting with ANSI escape codes for text formatting (e.g., colors, styles).
 	ansiLineRegex = regexp.MustCompile(`(?m)^\x1b\[[0-9;]*m.*`)
-	tgLogLevel    = regexp.MustCompile(`.*time=\S+ level=\S+ prefix=\S+ binary=\S+ msg=.*`)
+	// tgLogLevel matches log lines containing fields for time, level, prefix, binary, and message, each with non-whitespace values.
+	tgLogLevel = regexp.MustCompile(`.*time=\S+ level=\S+ prefix=\S+ binary=\S+ msg=.*`)
 )
 
 // Output calls terraform output for the given variable and return its string value representation.
