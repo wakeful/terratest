@@ -1,12 +1,12 @@
 package opa
 
 import (
+	"context"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 
-	getter "github.com/hashicorp/go-getter"
+	getter "github.com/hashicorp/go-getter/v2"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/testing"
@@ -22,11 +22,11 @@ var (
 // across calls.
 // For example, if you call DownloadPolicyE with the go-getter URL multiple times:
 //
-//	git::https://github.com/gruntwork-io/terratest.git//policies/foo.rego?ref=master
+//	git::https://github.com/gruntwork-io/terratest.git//policies/foo.rego?ref=main
 //
 // The first time the gruntwork-io/terratest repo will be downloaded to a new temp directory. All subsequent calls will
 // reuse that first temporary dir where the repo was cloned. This is preserved even if a different subdir is requested
-// later, e.g.: git::https://github.com/gruntwork-io/terratest.git//examples/bar.rego?ref=master.
+// later, e.g.: git::https://github.com/gruntwork-io/terratest.git//examples/bar.rego?ref=main
 // Note that the query parameters are always included in the base URL. This means that if you use a different ref (e.g.,
 // git::https://github.com/gruntwork-io/terratest.git//examples/bar.rego?ref=v0.39.3), then that will be cloned to a new
 // temporary directory rather than the cached dir.
@@ -36,13 +36,13 @@ func DownloadPolicyE(t testing.TestingT, rulePath string) (string, error) {
 		return "", err
 	}
 
-	detected, err := getter.Detect(rulePath, cwd, getter.Detectors)
-	if err != nil {
-		return "", err
-	}
-
 	// File getters are assumed to be a local path reference, so pass through the original path.
-	if strings.HasPrefix(detected, "file") {
+	var fileGetter getter.FileGetter
+	if ok, _ := fileGetter.Detect(&getter.Request{
+		Src:     rulePath,
+		Pwd:     cwd,
+		GetMode: getter.ModeAny,
+	}); ok {
 		return rulePath, nil
 	}
 
@@ -66,7 +66,7 @@ func DownloadPolicyE(t testing.TestingT, rulePath string) (string, error) {
 	tempDir = filepath.Join(tempDir, "getter")
 
 	logger.Default.Logf(t, "Downloading %s to temp dir %s", rulePath, tempDir)
-	if err := getter.GetAny(tempDir, baseDir); err != nil {
+	if _, err := getter.GetAny(context.Background(), tempDir, baseDir); err != nil {
 		return "", err
 	}
 	policyDirCache.Store(baseDir, tempDir)
