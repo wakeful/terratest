@@ -1006,6 +1006,9 @@ func getBaseURI() (string, error) {
 // getArmAppContainersClientFactory gets an arm app containers client factory
 func getArmAppContainersClientFactory(subscriptionID string) (*armappcontainers.ClientFactory, error) {
 	targetSubscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
 	clientCloudConfig, err := getClientCloudConfig()
 	if err != nil {
 		return nil, err
@@ -1048,7 +1051,15 @@ func getClientCloudConfig() (cloud.Configuration, error) {
 				},
 			},
 		}
-		return c, err
+		return c, nil
+	default:
+		return cloud.Configuration{},
+			fmt.Errorf("no cloud environment matching the name: %s. "+
+				"Available values are: "+
+				"AzurePublicCloud (default), "+
+				"AzureUSGovernmentCloud, "+
+				"AzureChinaCloud or "+
+				"AzureStackCloud",
+				envName)
 	}
-	return cloud.Configuration{}, fmt.Errorf("no cloud environment matching the name: %s", envName)
 }

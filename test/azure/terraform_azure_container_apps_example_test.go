@@ -22,7 +22,6 @@ func TestTerraformAzureContainerAppExample(t *testing.T) {
 	subscriptionID := ""
 	uniquePostfix := strings.ToLower(random.UniqueId())
 
-	// website::tag::1:: Configure Terraform setting up a path to Terraform code.
 	terraformOptions := &terraform.Options{
 		TerraformBinary: "",
 		// The path to where our Terraform code is located
@@ -32,19 +31,15 @@ func TestTerraformAzureContainerAppExample(t *testing.T) {
 		},
 	}
 
-	// website::tag::4:: At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
 
-	// website::tag::2:: Run `terraform init` and `terraform apply`. Fail the test if there are any errors.
 	terraform.InitAndApply(t, terraformOptions)
 
-	// website::tag::3:: Run `terraform output` to get the values of output variables
 	resourceGroupName := terraform.Output(t, terraformOptions, "resource_group_name")
 	envName := terraform.Output(t, terraformOptions, "container_app_env_name")
 	containerAppName := terraform.Output(t, terraformOptions, "container_app_name")
 	containerAppJobName := terraform.Output(t, terraformOptions, "container_app_job_name")
 
-	// website::tag::4:: Get Azure Container app details and assert them against the terraform output
 	// NOTE: the value of subscriptionID can be left blank, it will be replaced by the value
 	//       of the environment variable ARM_SUBSCRIPTION_ID
 
