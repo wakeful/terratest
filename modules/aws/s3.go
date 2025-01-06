@@ -420,6 +420,33 @@ func GetS3BucketPolicyE(t testing.TestingT, awsRegion string, bucket string) (st
 	return aws.ToString(res.Policy), nil
 }
 
+func GetS3BucketOwnershipControls(t testing.TestingT, awsRegion, bucket string) []string {
+	rules, err := GetS3BucketOwnershipControlsE(t, awsRegion, bucket)
+	require.NoError(t, err)
+
+	return rules
+}
+
+func GetS3BucketOwnershipControlsE(t testing.TestingT, awsRegion, bucket string) ([]string, error) {
+	s3Client, err := NewS3ClientE(t, awsRegion)
+	if err != nil {
+		return nil, err
+	}
+
+	out, err := s3Client.GetBucketOwnershipControls(context.Background(), &s3.GetBucketOwnershipControlsInput{
+		Bucket: &bucket,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	rules := make([]string, 0, len(out.OwnershipControls.Rules))
+	for _, rule := range out.OwnershipControls.Rules {
+		rules = append(rules, string(rule.ObjectOwnership))
+	}
+	return rules, nil
+}
+
 // AssertS3BucketExists checks if the given S3 bucket exists in the given region and fail the test if it does not.
 func AssertS3BucketExists(t testing.TestingT, region string, name string) {
 	err := AssertS3BucketExistsE(t, region, name)

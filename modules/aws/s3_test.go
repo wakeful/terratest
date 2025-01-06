@@ -267,3 +267,48 @@ func testEmptyBucket(t *testing.T, s3Client *s3.Client, region string, s3BucketN
 	}
 	require.Equal(t, 0, len((*bucketObjects).Contents))
 }
+
+func TestGetS3BucketOwnershipControls(t *testing.T) {
+	t.Parallel()
+
+	region := GetRandomStableRegion(t, nil, nil)
+	id := random.UniqueId()
+	logger.Default.Logf(t, "Random values selected. Region = %s, Id = %s\n", region, id)
+
+	s3BucketName := "gruntwork-terratest-" + strings.ToLower(id)
+	CreateS3Bucket(t, region, s3BucketName)
+	t.Cleanup(func() {
+		DeleteS3Bucket(t, region, s3BucketName)
+	})
+
+	t.Run("Exist", func(t *testing.T) {
+		s3Client, err := NewS3ClientE(t, region)
+		require.NoError(t, err)
+		_, err = s3Client.PutBucketOwnershipControls(context.Background(), &s3.PutBucketOwnershipControlsInput{
+			Bucket: &s3BucketName,
+			OwnershipControls: &types.OwnershipControls{
+				Rules: []types.OwnershipControlsRule{
+					{
+						ObjectOwnership: types.ObjectOwnershipBucketOwnerEnforced,
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+		t.Cleanup(func() {
+			_, err := s3Client.DeleteBucketOwnershipControls(context.Background(), &s3.DeleteBucketOwnershipControlsInput{
+				Bucket: &s3BucketName,
+			})
+			require.NoError(t, err)
+		})
+
+		controls := GetS3BucketOwnershipControls(t, region, s3BucketName)
+		assert.Equal(t, 1, len(controls))
+		assert.Equal(t, string(types.ObjectOwnershipBucketOwnerEnforced), controls[0])
+	})
+
+	t.Run("NotExist", func(t *testing.T) {
+		_, err := GetS3BucketOwnershipControlsE(t, region, s3BucketName)
+		assert.Error(t, err)
+	})
+}
