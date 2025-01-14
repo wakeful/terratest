@@ -55,7 +55,7 @@ func HttpGetE(t testing.TestingT, url string, tlsConfig *tls.Config) (int, strin
 // HttpGetWithOptionsE performs an HTTP GET, with an optional pointer to a custom TLS configuration, on the given URL and
 // return the HTTP status code, body, and any error.
 func HttpGetWithOptionsE(t testing.TestingT, options HttpGetOptions) (int, string, error) {
-	logger.Logf(t, "Making an HTTP GET call to URL %s", options.Url)
+	logger.Default.Logf(t, "Making an HTTP GET call to URL %s", options.Url)
 
 	// Set HTTP client transport config
 	tr := http.DefaultTransport.(*http.Transport).Clone()
@@ -260,11 +260,10 @@ func HTTPDoE(
 func HTTPDoWithOptionsE(
 	t testing.TestingT, options HttpDoOptions,
 ) (int, string, error) {
-	logger.Logf(t, "Making an HTTP %s call to URL %s", options.Method, options.Url)
+	logger.Default.Logf(t, "Making an HTTP %s call to URL %s", options.Method, options.Url)
 
-	tr := &http.Transport{
-		TLSClientConfig: options.TlsConfig,
-	}
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.TLSClientConfig = options.TlsConfig
 
 	client := http.Client{
 		// By default, Go does not impose a timeout, so an HTTP connection attempt can hang for a LONG time.
@@ -367,7 +366,7 @@ func HTTPDoWithRetryWithOptionsE(
 			if err != nil {
 				return "", err
 			}
-			logger.Logf(t, "output: %v", out)
+			logger.Default.Logf(t, "output: %v", out)
 			if statusCode != expectedStatus {
 				return "", ValidationFunctionFailed{Url: options.Url, Status: statusCode}
 			}

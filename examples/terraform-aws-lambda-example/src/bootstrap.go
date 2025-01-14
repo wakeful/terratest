@@ -12,13 +12,13 @@ type Event struct {
 	Echo       string `json:"Echo"`
 }
 
-// Fails if ShouldFail is `true`, otherwise echos the input.
+// HandleRequest Fails if ShouldFail is `true`, otherwise echos the input.
 func HandleRequest(ctx context.Context, evnt *Event) (string, error) {
 	if evnt == nil {
 		return "", fmt.Errorf("received nil event")
 	}
 	if evnt.ShouldFail {
-		return "", fmt.Errorf("Failed to handle %#v", evnt)
+		return "", fmt.Errorf("failed to handle %#v", evnt)
 	}
 	return evnt.Echo, nil
 }

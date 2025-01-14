@@ -65,7 +65,7 @@ func formatPackerOptionsPath(testFolder string) string {
 // SaveEc2KeyPair serializes and saves an Ec2KeyPair into the given folder. This allows you to create an Ec2KeyPair during setup
 // and to reuse that Ec2KeyPair later during validation and teardown.
 func SaveEc2KeyPair(t testing.TestingT, testFolder string, keyPair *aws.Ec2Keypair) {
-	SaveTestData(t, formatEc2KeyPairPath(testFolder), true, keyPair)
+	saveTestData(t, formatEc2KeyPairPath(testFolder), true, keyPair, false)
 }
 
 // LoadEc2KeyPair loads and unserializes an Ec2KeyPair from the given folder. This allows you to reuse an Ec2KeyPair that was
@@ -193,13 +193,22 @@ func FormatTestDataPath(testFolder string, filename string) string {
 // any contents that exist in the file found at `path` will be overwritten. This has the potential for causing duplicated resources
 // and should be used with caution. If `overwrite` is `false`, the save will be skipped and a warning will be logged.
 func SaveTestData(t testing.TestingT, path string, overwrite bool, value interface{}) {
-	logger.Logf(t, "Storing test data in %s so it can be reused later", path)
+	saveTestData(t, path, overwrite, value, true)
+}
+
+// saveTestData serializes and saves a value used at test time to the given path. This allows you to create some sort of test data
+// (e.g., TerraformOptions) during setup and to reuse this data later during validation and teardown. If `overwrite` is `true`,
+// any contents that exist in the file found at `path` will be overwritten. This has the potential for causing duplicated resources
+// and should be used with caution. If `overwrite` is `false`, the save will be skipped and a warning will be logged.
+// If `loggedVal` is `true`, the value will be logged as JSON.
+func saveTestData(t testing.TestingT, path string, overwrite bool, value interface{}, loggedVal bool) {
+	logger.Default.Logf(t, "Storing test data in %s so it can be reused later", path)
 
 	if IsTestDataPresent(t, path) {
 		if overwrite {
-			logger.Logf(t, "[WARNING] The named test data at path %s is non-empty. Save operation will overwrite existing value with \"%v\".\n.", path, value)
+			logger.Default.Logf(t, "[WARNING] The named test data at path %s is non-empty. Save operation will overwrite existing value with \"%v\".\n.", path, value)
 		} else {
-			logger.Logf(t, "[WARNING] The named test data at path %s is non-empty. Skipping save operation to prevent overwriting existing value with \"%v\".\n.", path, value)
+			logger.Default.Logf(t, "[WARNING] The named test data at path %s is non-empty. Skipping save operation to prevent overwriting existing value with \"%v\".\n.", path, value)
 			return
 		}
 	}
@@ -209,7 +218,9 @@ func SaveTestData(t testing.TestingT, path string, overwrite bool, value interfa
 		t.Fatalf("Failed to convert value %s to JSON: %v", path, err)
 	}
 
-	logger.Logf(t, "Marshalled JSON: %s", string(bytes))
+	if loggedVal {
+		logger.Default.Logf(t, "Marshalled JSON: %s", string(bytes))
+	}
 
 	parentDir := filepath.Dir(path)
 	if err := os.MkdirAll(parentDir, 0777); err != nil {
@@ -225,7 +236,7 @@ func SaveTestData(t testing.TestingT, path string, overwrite bool, value interfa
 // value will be deserialized. This allows you to reuse some sort of test data (e.g., TerraformOptions) from earlier
 // setup steps in later validation and teardown steps.
 func LoadTestData(t testing.TestingT, path string, value interface{}) {
-	logger.Logf(t, "Loading test data from %s", path)
+	logger.Default.Logf(t, "Loading test data from %s", path)
 
 	bytes, err := os.ReadFile(path)
 	if err != nil {
@@ -308,12 +319,12 @@ func isEmptyJSON(t testing.TestingT, bytes []byte) bool {
 // CleanupTestData cleans up the test data at the given path.
 func CleanupTestData(t testing.TestingT, path string) {
 	if files.FileExists(path) {
-		logger.Logf(t, "Cleaning up test data from %s", path)
+		logger.Default.Logf(t, "Cleaning up test data from %s", path)
 		if err := os.Remove(path); err != nil {
 			t.Fatalf("Failed to clean up file at %s: %v", path, err)
 		}
 	} else {
-		logger.Logf(t, "%s does not exist. Nothing to cleanup.", path)
+		logger.Default.Logf(t, "%s does not exist. Nothing to cleanup.", path)
 	}
 }
 
@@ -329,16 +340,16 @@ func CleanupTestDataFolderE(t testing.TestingT, path string) error {
 	path = filepath.Join(path, ".test-data")
 	exists, err := files.FileExistsE(path)
 	if err != nil {
-		logger.Logf(t, "Failed to clean up test data folder at %s: %v", path, err)
+		logger.Default.Logf(t, "Failed to clean up test data folder at %s: %v", path, err)
 		return err
 	}
 
 	if !exists {
-		logger.Logf(t, "%s does not exist. Nothing to cleanup.", path)
+		logger.Default.Logf(t, "%s does not exist. Nothing to cleanup.", path)
 		return nil
 	}
 	if err := os.RemoveAll(path); err != nil {
-		logger.Logf(t, "Failed to clean up test data folder at %s: %v", path, err)
+		logger.Default.Logf(t, "Failed to clean up test data folder at %s: %v", path, err)
 		return err
 	}
 
