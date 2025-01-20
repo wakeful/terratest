@@ -44,7 +44,7 @@ func WorkspaceSelectOrNewE(t testing.TestingT, options *Options, name string) (s
 func isExistingWorkspace(out string, name string) bool {
 	workspaces := strings.Split(out, "\n")
 	for _, ws := range workspaces {
-		if nameMatchesWorkspace(name, ws) {
+		if strings.HasSuffix(ws, name) {
 			return true
 		}
 	}
