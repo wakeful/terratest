@@ -51,17 +51,6 @@ func isExistingWorkspace(out string, name string) bool {
 	return false
 }
 
-func nameMatchesWorkspace(name string, workspace string) bool {
-	// Regex for matching workspace should match for strings with optional leading asterisk "*"
-	// following optional white spaces following the workspace name.
-	// E.g. for the given name "terratest", following strings will match:
-	//
-	//    "* terratest"
-	//    "  terratest"
-	match, _ := regexp.MatchString(fmt.Sprintf("^\\*?\\s*%s$", name), workspace)
-	return match
-}
-
 // WorkspaceDelete removes the specified terraform workspace with the given options.
 // It returns the name of the current workspace AFTER deletion, and the returned error (that can be nil).
 // If the workspace to delete is the current one, then it tries to switch to the "default" workspace.
