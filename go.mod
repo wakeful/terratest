@@ -30,12 +30,12 @@ require (
 	github.com/oracle/oci-go-sdk v7.1.0+incompatible
 	github.com/pquerna/otp v1.4.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tmccombs/hcl2json v0.6.4
 	github.com/urfave/cli v1.22.16
 	github.com/zclconf/go-cty v1.15.0
-	golang.org/x/crypto v0.31.0
-	golang.org/x/net v0.31.0
+	golang.org/x/crypto v0.32.0
+	golang.org/x/net v0.34.0
 	golang.org/x/oauth2 v0.24.0
 	google.golang.org/api v0.206.0
 	google.golang.org/genproto v0.0.0-20241113202542-65e8d215514f
@@ -46,8 +46,8 @@ require (
 
 require (
 	cloud.google.com/go/cloudbuild v1.19.0
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.14.0
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.0
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.17.0
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/appcontainers/armappcontainers/v3 v3.0.0
 	github.com/aws/aws-sdk-go-v2 v1.32.5
 	github.com/aws/aws-sdk-go-v2/config v1.28.5
@@ -71,10 +71,12 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.37.1
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.56.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.1
+	github.com/denisenkom/go-mssqldb v0.12.3
 	github.com/gonvenience/ytbx v1.4.4
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/homeport/dyff v1.6.0
 	github.com/jackc/pgx/v5 v5.7.1
+	github.com/lib/pq v1.10.9
 	github.com/slack-go/slack v0.15.0
 	gotest.tools/v3 v3.5.1
 )
@@ -140,6 +142,8 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
+	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
+	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/gonvenience/bunt v1.3.5 // indirect
@@ -203,8 +207,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/term v0.27.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/term v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
