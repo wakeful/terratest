@@ -1,8 +1,6 @@
 package terraform
 
 import (
-	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/testing"
