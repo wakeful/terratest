@@ -1,8 +1,6 @@
 package terraform
 
 import (
-	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/testing"
@@ -44,22 +42,11 @@ func WorkspaceSelectOrNewE(t testing.TestingT, options *Options, name string) (s
 func isExistingWorkspace(out string, name string) bool {
 	workspaces := strings.Split(out, "\n")
 	for _, ws := range workspaces {
-		if nameMatchesWorkspace(name, ws) {
+		if strings.HasSuffix(ws, name) {
 			return true
 		}
 	}
 	return false
-}
-
-func nameMatchesWorkspace(name string, workspace string) bool {
-	// Regex for matching workspace should match for strings with optional leading asterisk "*"
-	// following optional white spaces following the workspace name.
-	// E.g. for the given name "terratest", following strings will match:
-	//
-	//    "* terratest"
-	//    "  terratest"
-	match, _ := regexp.MatchString(fmt.Sprintf("^\\*?\\s*%s$", name), workspace)
-	return match
 }
 
 // WorkspaceDelete removes the specified terraform workspace with the given options.
