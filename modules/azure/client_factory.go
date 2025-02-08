@@ -12,6 +12,7 @@ package azure
 
 import (
 	"fmt"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 	"os"
 	"reflect"
 	"strings"
@@ -962,6 +963,14 @@ func CreateManagedEnvironmentsClientE(subscriptionID string) (*armappcontainers.
 	return client, nil
 }
 
+func CreateResourceGroupClientV2E(subscriptionID string) (*armresources.ResourceGroupsClient, error) {
+	clientFactory, err := getArmResourcesClientFactory(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	return clientFactory.NewResourceGroupsClient(), nil
+}
+
 func CreateContainerAppsClientE(subscriptionID string) (*armappcontainers.ContainerAppsClient, error) {
 	clientFactory, err := getArmAppContainersClientFactory(subscriptionID)
 	if err != nil {
@@ -1027,6 +1036,31 @@ func getBaseURI() (string, error) {
 		return "", err
 	}
 	return baseURI, nil
+}
+
+// getArmResourcesClientFactory gets an arm resources client factory
+func getArmResourcesClientFactory(subscriptionID string) (*armresources.ClientFactory, error) {
+	targetSubscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	clientCloudConfig, err := getClientCloudConfig()
+	if err != nil {
+		return nil, err
+	}
+	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
+		ClientOptions: azcore.ClientOptions{
+			Cloud: clientCloudConfig,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return armresources.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
+		ClientOptions: policy.ClientOptions{
+			Cloud: clientCloudConfig,
+		},
+	})
 }
 
 // getArmAppContainersClientFactory gets an arm app containers client factory
