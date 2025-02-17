@@ -10,10 +10,13 @@ package helm
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
 	appsv1 "k8s.io/api/apps/v1"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
@@ -135,4 +138,29 @@ func renderChartDump(t *testing.T, remoteChartVersion, snapshotDir string) strin
 	}
 	UpdateSnapshot(t, options, output, releaseName)
 	return output
+}
+
+func TestUnmarshall(t *testing.T) {
+	t.Run("Single", func(t *testing.T) {
+		b, err := os.ReadFile("testdata/deployment.yaml")
+		require.NoError(t, err)
+		var deployment appsv1.Deployment
+		UnmarshalK8SYaml(t, string(b), &deployment)
+		assert.Equal(t, deployment.Name, "nginx-deployment")
+	})
+	t.Run("Multiple", func(t *testing.T) {
+		for _, f := range []string{"testdata/deployments.yaml", "testdata/deployments-array.yaml"} {
+			b, err := os.ReadFile(f)
+			require.NoError(t, err)
+			var deployment []appsv1.Deployment
+			UnmarshalK8SYaml(t, string(b), &deployment)
+			require.Len(t, deployment, 2)
+			assert.Equal(t, deployment[0].Name, "nginx-deployment-1")
+			assert.Equal(t, deployment[1].Name, "nginx-deployment-2")
+
+			// overwrite for equality check
+			deployment[1].Name = deployment[0].Name
+			assert.Equal(t, deployment[0], deployment[1])
+		}
+	})
 }
