@@ -16,7 +16,7 @@ running the tests. Currently, only Microsoft SQL Server, PostgreSQL, and MySQL a
 
 ## Running automated tests against this module
 
-1. Install Terraform and ensure it's available in your `PATH`.
-1. Install Golang and ensure this code is checked out into your `GOPATH`.
+1. Install [Terraform](https://www.terraform.io/) and ensure it's available in your `PATH`.
+1. Install [Golang](https://golang.org/) and ensure this code is checked out into your `GOPATH`.
 1. Run `go mod tidy` to manage dependencies.
 1. Run `go test -v test/terraform_database_example_test.go` to execute the tests.
