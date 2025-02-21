@@ -2,20 +2,20 @@ package helm
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
+	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
-	"github.com/ghodss/yaml"
+	"github.com/gonvenience/ytbx"
 	"github.com/gruntwork-io/go-commons/errors"
-	"github.com/stretchr/testify/require"
-
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/testing"
-
-	"os"
-
-	"github.com/gonvenience/ytbx"
 	"github.com/homeport/dyff/pkg/dyff"
+	"github.com/stretchr/testify/require"
+	goyaml "gopkg.in/yaml.v3"
 )
 
 // RenderTemplate runs `helm template` to render the template given the provided options and returns stdout/stderr from
@@ -131,14 +131,78 @@ func UnmarshalK8SYaml(t testing.TestingT, yamlData string, destinationObj interf
 //
 // At the end of this, the deployment variable will be populated.
 func UnmarshalK8SYamlE(t testing.TestingT, yamlData string, destinationObj interface{}) error {
-	// NOTE: the client-go library can only decode json, so we will first convert the yaml to json before unmarshaling
-	jsonData, err := yaml.YAMLToJSON([]byte(yamlData))
-	if err != nil {
-		return errors.WithStackTrace(err)
+	decoder := goyaml.NewDecoder(strings.NewReader(yamlData))
+
+	// Ensure destinationObj is a pointer
+	destVal := reflect.ValueOf(destinationObj)
+	if destVal.Kind() != reflect.Ptr {
+		return fmt.Errorf("destinationObj must be a pointer")
 	}
-	err = json.Unmarshal(jsonData, destinationObj)
-	if err != nil {
-		return errors.WithStackTrace(err)
+	destElem := destVal.Elem()
+
+	// Handle single object or list as root
+	if destElem.Kind() != reflect.Slice {
+		// Decode only the first document
+		var rawYaml interface{}
+		if err := decoder.Decode(&rawYaml); err != nil {
+			return errors.WithStackTrace(err)
+		}
+		// If the root is an array but destinationObj is a single object, return an error
+		if reflect.TypeOf(rawYaml).Kind() == reflect.Slice {
+			return fmt.Errorf("YAML root is an array, but destinationObj is a single object")
+		}
+
+		jsonData, err := json.Marshal(rawYaml)
+		if err != nil {
+			return errors.WithStackTrace(err)
+		}
+
+		if err := json.Unmarshal(jsonData, destinationObj); err != nil {
+			return errors.WithStackTrace(err)
+		}
+		return nil
+	}
+
+	// Handle multiple YAML documents (destinationObj is a slice)
+	slicePtr := destVal
+	sliceVal := slicePtr.Elem()
+
+	for {
+		var rawYaml interface{}
+		if err := decoder.Decode(&rawYaml); err != nil {
+			if err == io.EOF {
+				break // No more documents
+			}
+			return errors.WithStackTrace(err)
+		}
+
+		jsonData, err := json.Marshal(rawYaml)
+		if err != nil {
+			return errors.WithStackTrace(err)
+		}
+
+		// If root object is a slice, append elements individually
+		if reflect.TypeOf(rawYaml).Kind() == reflect.Slice {
+			var items []json.RawMessage
+			if err := json.Unmarshal(jsonData, &items); err != nil {
+				return errors.WithStackTrace(err)
+			}
+
+			for _, item := range items {
+				newElem := reflect.New(sliceVal.Type().Elem()) // Create new element
+				if err := json.Unmarshal(item, newElem.Interface()); err != nil {
+					return errors.WithStackTrace(err)
+				}
+				sliceVal.Set(reflect.Append(sliceVal, newElem.Elem()))
+			}
+
+		} else {
+			newElem := reflect.New(sliceVal.Type().Elem()) // Create new element
+			if err := json.Unmarshal(jsonData, newElem.Interface()); err != nil {
+				return errors.WithStackTrace(err)
+			}
+			sliceVal.Set(reflect.Append(sliceVal, newElem.Elem()))
+		}
 	}
 	return nil
 }
