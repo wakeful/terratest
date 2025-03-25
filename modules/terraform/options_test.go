@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -81,7 +82,7 @@ func TestExtraArgsHelp(t *testing.T) {
 	for _, tt := range testtable {
 		out, err := tt.fn()
 		require.NoError(t, err)
-		assert.Contains(t, out, fmt.Sprintf("Usage: terraform [global options] %s", tt.name))
+		assert.Regexp(t, regexp.MustCompile(fmt.Sprintf(`Usage: \S+ \[global options\] %s`, tt.name)), out)
 	}
 }
 
