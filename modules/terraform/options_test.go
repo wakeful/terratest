@@ -89,7 +89,7 @@ func TestExtraArgsHelp(t *testing.T) {
 	for _, tt := range testtable {
 		out, err := tt.fn()
 		require.NoError(t, err)
-		assert.Regexp(t, regexp.MustCompile(fmt.Sprintf(`Usage: \S+ (\[global options\] )?%s`, tt.name)), out)
+		assert.Regexp(t, regexp.MustCompile(fmt.Sprintf(`(Usage|USAGE):\s+\S+\s+(\[global options\]\s+)?%s`, tt.name)), out)
 	}
 }
 
