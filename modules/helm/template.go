@@ -30,19 +30,42 @@ func RenderTemplate(t testing.TestingT, options *Options, chartDir string, relea
 // RenderTemplateE runs `helm template` to render the template given the provided options and returns stdout/stderr from
 // the template command. If you pass in templateFiles, this will only render those templates.
 func RenderTemplateE(t testing.TestingT, options *Options, chartDir string, releaseName string, templateFiles []string, extraHelmArgs ...string) (string, error) {
+	// Get render arguments
+	args, err := getRenderArgs(t, options, chartDir, releaseName, templateFiles, extraHelmArgs...)
+	if err != nil {
+		return "", err
+	}
+
+	// Finally, call out to helm template command
+	return RunHelmCommandAndGetStdOutE(t, options, "template", args...)
+}
+
+// RenderTemplateAndGetStdOutErrE runs `helm template` to render the template given the provided options and returns stdout and stderr separately from
+// the template command. If you pass in templateFiles, this will only render those templates.
+func RenderTemplateAndGetStdOutErrE(t testing.TestingT, options *Options, chartDir string, releaseName string, templateFiles []string, extraHelmArgs ...string) (string, string, error) {
+	args, err := getRenderArgs(t, options, chartDir, releaseName, templateFiles, extraHelmArgs...)
+	if err != nil {
+		return "", "", err
+	}
+
+	// Finally, call out to helm template command
+	return RunHelmCommandAndGetStdOutErrE(t, options, "template", args...)
+}
+
+func getRenderArgs(t testing.TestingT, options *Options, chartDir string, releaseName string, templateFiles []string, extraHelmArgs ...string) ([]string, error) {
 	// First, verify the charts dir exists
 	absChartDir, err := filepath.Abs(chartDir)
 	if err != nil {
-		return "", errors.WithStackTrace(err)
+		return nil, errors.WithStackTrace(err)
 	}
 	if !files.FileExists(chartDir) {
-		return "", errors.WithStackTrace(ChartNotFoundError{chartDir})
+		return nil, errors.WithStackTrace(ChartNotFoundError{chartDir})
 	}
 
 	// check chart dependencies
 	if options.BuildDependencies {
 		if _, err := RunHelmCommandAndGetOutputE(t, options, "dependency", "build", chartDir); err != nil {
-			return "", errors.WithStackTrace(err)
+			return nil, errors.WithStackTrace(err)
 		}
 	}
 
@@ -54,13 +77,13 @@ func RenderTemplateE(t testing.TestingT, options *Options, chartDir string, rele
 	}
 	args, err = getValuesArgsE(t, options, args...)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	for _, templateFile := range templateFiles {
 		// validate this is a valid template file
 		absTemplateFile := filepath.Join(absChartDir, templateFile)
 		if !strings.HasPrefix(templateFile, "charts") && !files.FileExists(absTemplateFile) {
-			return "", errors.WithStackTrace(TemplateFileNotFoundError{Path: templateFile, ChartDir: absChartDir})
+			return nil, errors.WithStackTrace(TemplateFileNotFoundError{Path: templateFile, ChartDir: absChartDir})
 		}
 
 		// Note: we only get the abs template file path to check it actually exists, but the `helm template` command
@@ -72,9 +95,7 @@ func RenderTemplateE(t testing.TestingT, options *Options, chartDir string, rele
 
 	// ... and add the name and chart at the end as the command expects
 	args = append(args, releaseName, chartDir)
-
-	// Finally, call out to helm template command
-	return RunHelmCommandAndGetStdOutE(t, options, "template", args...)
+	return args, nil
 }
 
 // RenderRemoteTemplate runs `helm template` to render a *remote* chart  given the provided options and returns stdout/stderr from
