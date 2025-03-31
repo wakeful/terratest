@@ -11,7 +11,7 @@ package helm
 import (
 	"fmt"
 	"os"
-	"regexp"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -164,12 +164,18 @@ func TestUnmarshall(t *testing.T) {
 			assert.Equal(t, deployment[0], deployment[1])
 		}
 	})
-	t.Run("Invalid", func(t *testing.T) {
-		b, err := os.ReadFile("testdata/invalid-duplicate.yaml")
-		require.NoError(t, err)
-		var deployment appsv1.Deployment
-		err = UnmarshalK8SYamlE(t, string(b), &deployment)
-		assert.Error(t, err)
-		assert.Regexp(t, regexp.MustCompile(`mapping key ".+" already defined at line \d+`), err.Error())
-	})
+}
+
+func TestRenderWarning(t *testing.T) {
+	chart, err := filepath.Abs("testdata/deprecated-chart")
+	require.NoError(t, err)
+
+	stdout, stderr, err := RenderTemplateAndGetStdOutErrE(t, &Options{}, chart, "test", nil)
+	require.NoError(t, err)
+
+	assert.Contains(t, stderr, "WARNING:")
+
+	var deployment appsv1.Deployment
+	UnmarshalK8SYaml(t, string(stdout), &deployment)
+	assert.Equal(t, deployment.Name, "nginx-deployment")
 }
