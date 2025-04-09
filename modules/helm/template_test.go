@@ -200,3 +200,24 @@ func TestRenderWarning(t *testing.T) {
 	UnmarshalK8SYaml(t, string(stdout), &deployment)
 	assert.Equal(t, deployment.Name, "nginx-deployment")
 }
+
+func TestRenderMultipleManifests(t *testing.T) {
+	chart, err := filepath.Abs("testdata/multiple-manifests")
+	require.NoError(t, err)
+
+	out := RenderTemplate(t, &Options{}, chart, "test", []string{})
+
+	var configs []corev1.ConfigMap
+	UnmarshalK8SYamlsE(t, out, &configs, func(v corev1.ConfigMap) bool {
+		return v.Kind == "ConfigMap"
+	})
+	require.Len(t, configs, 1)
+	assert.Equal(t, configs[0].Name, "test-configmap")
+
+	var deploys []appsv1.Deployment
+	UnmarshalK8SYamlsE(t, out, &deploys, func(v appsv1.Deployment) bool {
+		return v.Kind == "Deployment"
+	})
+	require.Len(t, deploys, 1)
+	assert.Equal(t, deploys[0].Name, "test-deployment")
+}
