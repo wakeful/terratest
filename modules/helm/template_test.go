@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -164,6 +165,25 @@ func TestUnmarshall(t *testing.T) {
 			deployment[1].Name = deployment[0].Name
 			assert.Equal(t, deployment[0], deployment[1])
 		}
+	})
+	t.Run("Invalid", func(t *testing.T) {
+		b, err := os.ReadFile("testdata/invalid-duplicate.yaml")
+		require.NoError(t, err)
+		var deployment appsv1.Deployment
+		err = UnmarshalK8SYamlE(t, string(b), &deployment)
+		assert.Error(t, err)
+		assert.Regexp(t, regexp.MustCompile(`mapping key ".+" already defined at line \d+`), err.Error())
+	})
+	t.Run("LiteralBlock", func(t *testing.T) {
+		b, err := os.ReadFile("testdata/configmap-literalblock.yaml")
+		require.NoError(t, err)
+		var configmap corev1.ConfigMap
+		err = UnmarshalK8SYamlE(t, string(b), &configmap)
+		assert.NoError(t, err)
+		data := `configmap-data-value-1;      
+configmap-data-value-2;
+`
+		assert.Equal(t, data, configmap.Data["thisIsSomeDataKey"])
 	})
 }
 
