@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -19,6 +20,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/logger"
@@ -164,6 +166,25 @@ func TestUnmarshall(t *testing.T) {
 			assert.Equal(t, deployment[0], deployment[1])
 		}
 	})
+	t.Run("Invalid", func(t *testing.T) {
+		b, err := os.ReadFile("testdata/invalid-duplicate.yaml")
+		require.NoError(t, err)
+		var deployment appsv1.Deployment
+		err = UnmarshalK8SYamlE(t, string(b), &deployment)
+		assert.Error(t, err)
+		assert.Regexp(t, regexp.MustCompile(`mapping key ".+" already defined at line \d+`), err.Error())
+	})
+	t.Run("LiteralBlock", func(t *testing.T) {
+		b, err := os.ReadFile("testdata/configmap-literalblock.yaml")
+		require.NoError(t, err)
+		var configmap corev1.ConfigMap
+		err = UnmarshalK8SYamlE(t, string(b), &configmap)
+		assert.NoError(t, err)
+		data := `configmap-data-value-1;      
+configmap-data-value-2;
+`
+		assert.Equal(t, data, configmap.Data["thisIsSomeDataKey"])
+	})
 }
 
 func TestRenderWarning(t *testing.T) {
@@ -178,4 +199,25 @@ func TestRenderWarning(t *testing.T) {
 	var deployment appsv1.Deployment
 	UnmarshalK8SYaml(t, string(stdout), &deployment)
 	assert.Equal(t, deployment.Name, "nginx-deployment")
+}
+
+func TestRenderMultipleManifests(t *testing.T) {
+	chart, err := filepath.Abs("testdata/multiple-manifests")
+	require.NoError(t, err)
+
+	out := RenderTemplate(t, &Options{}, chart, "test", []string{})
+
+	var configs []corev1.ConfigMap
+	UnmarshalK8SYamlsE(t, out, &configs, func(v corev1.ConfigMap) bool {
+		return v.Kind == "ConfigMap"
+	})
+	require.Len(t, configs, 1)
+	assert.Equal(t, configs[0].Name, "test-configmap")
+
+	var deploys []appsv1.Deployment
+	UnmarshalK8SYamlsE(t, out, &deploys, func(v appsv1.Deployment) bool {
+		return v.Kind == "Deployment"
+	})
+	require.Len(t, deploys, 1)
+	assert.Equal(t, deploys[0].Name, "test-deployment")
 }

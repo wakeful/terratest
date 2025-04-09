@@ -139,6 +139,37 @@ func RenderRemoteTemplateE(t testing.TestingT, options *Options, chartURL string
 	return RunHelmCommandAndGetStdOutE(t, options, "template", args...)
 }
 
+// UnmarshalK8SYamls is the same as UnmarshalK8SYamlsE, but will fail the test if there is an error.
+func UnmarshalK8SYamls[T any](t testing.TestingT, yamlData string, destinationObj *[]T, check func(v T) bool) {
+	require.NoError(t, UnmarshalK8SYamlsE(t, yamlData, destinationObj, check))
+}
+
+// UnmarshalK8SYamlsE try to unmarshal yaml that contains multiple k8s objects into slice of concrete type.
+// It requires user to pass `check` function to determine whether the unmarshaled object is valid or not.
+// It will ignore error or invalid object but if no valid object were found, it will return error.
+func UnmarshalK8SYamlsE[T any](t testing.TestingT, yamlData string, destinationObj *[]T, check func(v T) bool) error {
+	originalLen := len(*destinationObj)
+
+	raws := []json.RawMessage{}
+	if err := UnmarshalK8SYamlE(t, yamlData, &raws); err != nil {
+		return err
+	}
+
+	for _, raw := range raws {
+		var v T
+		err := json.Unmarshal(raw, &v)
+		if err != nil || !check(v) {
+			continue
+		}
+		*destinationObj = append(*destinationObj, v)
+	}
+
+	if len(*destinationObj) == originalLen {
+		return fmt.Errorf("no matching raw data were found for the concrete type")
+	}
+	return nil
+}
+
 // UnmarshalK8SYaml is the same as UnmarshalK8SYamlE, but will fail the test if there is an error.
 func UnmarshalK8SYaml(t testing.TestingT, yamlData string, destinationObj interface{}) {
 	require.NoError(t, UnmarshalK8SYamlE(t, yamlData, destinationObj))
