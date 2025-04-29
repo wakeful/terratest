@@ -1,13 +1,18 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 	"testing"
 
+	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/shell"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func DirectoryEqual(t *testing.T, dirA string, dirB string) bool {
@@ -42,13 +47,26 @@ func openFile(t *testing.T, filename string) *os.File {
 }
 
 func testExample(t *testing.T, example string) {
-	logger := NewTestLogger(t)
-	dir := t.TempDir()
-	logFileName := fmt.Sprintf("./fixtures/%s_example.log", example)
+	expected, output := path.Join(t.TempDir(), "expected"), path.Join(t.TempDir(), "output")
+	require.NoError(t, os.Mkdir(expected, 0755))
+	require.NoError(t, os.Mkdir(output, 0755))
+
+	// prepare expected directory to diff against
 	expectedOutputDirName := fmt.Sprintf("./fixtures/%s_example_expected", example)
+	require.NoError(t, files.CopyFolderContents(expectedOutputDirName, expected))
+	b, err := os.ReadFile(path.Join(expected, "report.xml"))
+	require.NoError(t, err)
+	b = bytes.ReplaceAll(b, []byte("go1.21.1"), []byte(runtime.Version())) // replace the harcoded go version of the fixture
+	require.NoError(t, os.WriteFile(path.Join(expected, "report.xml"), b, 644))
+
+	// run the parser
+	logger := NewTestLogger(t)
+	logFileName := fmt.Sprintf("./fixtures/%s_example.log", example)
 	file := openFile(t, logFileName)
-	SpawnParsers(logger, file, dir)
-	assert.True(t, DirectoryEqual(t, dir, expectedOutputDirName))
+	SpawnParsers(logger, file, output)
+
+	// assert
+	assert.True(t, DirectoryEqual(t, expected, output))
 }
 
 func TestIntegrationBasicExample(t *testing.T) {
