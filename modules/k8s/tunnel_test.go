@@ -90,7 +90,7 @@ func TestTunnelOpensAPortForwardTunnelToService(t *testing.T) {
 	WaitUntilServiceAvailable(t, options, "nginx-service", 60, 1*time.Second)
 
 	// Open a tunnel from any available port locally
-	tunnel := NewTunnel(options, ResourceTypeService, "nginx-service", 0, 80)
+	tunnel := NewTunnel(options, ResourceTypeService, "nginx-service", 0, 8080)
 	defer tunnel.Close()
 	tunnel.ForwardPort(t)
 
@@ -150,5 +150,5 @@ spec:
   ports:
   - protocol: TCP
     targetPort: 80
-    port: 80
+    port: 8080
 `
