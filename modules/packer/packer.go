@@ -2,6 +2,7 @@
 package packer
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -272,4 +273,64 @@ func trimPackerVersion(versionCmdOutput string) string {
 		return matches[1]
 	}
 	return ""
+}
+
+type packerManifest struct {
+	Builds      []packerManifestBuild `json:"builds"`
+	LastRunUUID string                `json:"last_run_uuid"`
+}
+
+type packerManifestBuild struct {
+	Name          string                    `json:"name"`
+	BuilderType   string                    `json:"builder_type"`
+	BuildTime     int64                     `json:"build_time"`
+	Files         []packerManifestBuildFile `json:"files"`
+	ArtifactID    string                    `json:"artifact_id"`
+	PackerRunUUID string                    `json:"packer_run_uuid"`
+	CustomData    map[string]interface{}    `json:"custom_data"`
+}
+
+type packerManifestBuildFile struct {
+	Name string `json:"name"`
+	Size int64  `json:"size"`
+}
+
+// GetArtifactIDFromManifestBuildName returns the artifact id from a build name contained in the manifest file
+// see https://developer.hashicorp.com/packer/docs/post-processors/manifest for more info
+// if the build name is not found, it will fail the test
+func GetArtifactIDFromManifestBuildName(t testing.TestingT, manifestPath string, buildName string) string {
+	artifactID, err := GetArtifactIDFromManifestBuildNameE(t, manifestPath, buildName)
+	if err != nil {
+		t.Fatalf("failed to get artifact id from manifest build name: %s", err)
+	}
+	return artifactID
+}
+
+// GetArtifactIDFromManifestBuildNameE returns the artifact id from a build name contained in the manifest file
+// see https://developer.hashicorp.com/packer/docs/post-processors/manifest for more info
+func GetArtifactIDFromManifestBuildNameE(t testing.TestingT, manifestPath string, buildName string) (artifactID string, err error) {
+	b, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return "", fmt.Errorf("error reading manifest file: %w", err)
+	}
+
+	var manifest packerManifest
+	if err = json.Unmarshal(b, &manifest); err != nil {
+		return "", fmt.Errorf("error unmarshalling manifest file: %w", err)
+	}
+
+	found := false
+	for _, build := range manifest.Builds {
+		if build.Name != buildName {
+			continue
+		}
+
+		artifactID, found = build.ArtifactID, true
+		break
+	}
+	if !found {
+		return "", fmt.Errorf("build name %s not found in manifest file %s", buildName, manifestPath)
+	}
+
+	return artifactID, nil
 }

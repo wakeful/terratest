@@ -2,10 +2,13 @@ package packer
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestExtractAmiIdFromOneLine(t *testing.T) {
@@ -205,4 +208,55 @@ func TestTrimPackerVersion(t *testing.T) {
 			assert.Equal(t, test.expected, out)
 		})
 	}
+}
+
+func TestGetArtifactIDFromManifestBuildNameE(t *testing.T) {
+	t.Parallel()
+
+	// example manifest from https://developer.hashicorp.com/packer/docs/post-processors/manifest
+	manifest := `
+{
+  "builds": [
+    {
+      "name": "docker",
+      "builder_type": "docker",
+      "build_time": 1507245986,
+      "files": [
+        {
+          "name": "packer_example",
+          "size": 102219776
+        }
+      ],
+      "artifact_id": "Container",
+      "packer_run_uuid": "6d5d3185-fa95-44e1-8775-9e64fe2e2d8f",
+      "custom_data": {
+        "my_custom_data": "example"
+      }
+    }
+  ],
+  "last_run_uuid": "6d5d3185-fa95-44e1-8775-9e64fe2e2d8f"
+}
+`
+	manifestPath := filepath.Join(t.TempDir(), "manifest.json")
+	err := os.WriteFile(manifestPath, []byte(manifest), 0600)
+	require.NoError(t, err)
+
+	t.Run("Found", func(t *testing.T) {
+		t.Parallel()
+
+		artifactID, err := GetArtifactIDFromManifestBuildNameE(t, manifestPath, "docker")
+		require.NoError(t, err)
+		assert.Equal(t, "Container", artifactID)
+
+		artifactID2 := GetArtifactIDFromManifestBuildName(t, manifestPath, "docker")
+		assert.Equal(t, "Container", artifactID2)
+	})
+
+	t.Run("Not Found", func(t *testing.T) {
+		t.Parallel()
+
+		_, err := GetArtifactIDFromManifestBuildNameE(t, manifestPath, "notfound")
+		require.Error(t, err)
+	})
+
 }
