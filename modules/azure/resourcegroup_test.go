@@ -23,7 +23,7 @@ func TestResourceGroupExists(t *testing.T) {
 	resourceGroupName := "fakeResourceGroupName"
 	exists, err := ResourceGroupExistsE(resourceGroupName, "")
 	assert.NoError(t, err)
-	assert.False(t, exists)
+	require.False(t, exists)
 }
 
 func TestGetAResourceGroup(t *testing.T) {
