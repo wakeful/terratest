@@ -21,7 +21,7 @@ func ResourceGroupExistsV2(t *testing.T, resourceGroupName string, subscriptionI
 func ResourceGroupExistsV2E(resourceGroupName, subscriptionID string) (bool, error) {
 	exists, err := GetResourceGroupV2E(resourceGroupName, subscriptionID)
 	if err != nil {
-		if ResourceNotFoundErrorExists(err) {
+		if resourceGroupNotFoundError(err) {
 			return false, nil
 		}
 		return false, err

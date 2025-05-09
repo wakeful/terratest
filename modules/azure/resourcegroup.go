@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2020-10-01/resources"
+	"github.com/Azure/go-autorest/autorest"
+	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,7 +24,7 @@ func ResourceGroupExists(t *testing.T, resourceGroupName string, subscriptionID 
 func ResourceGroupExistsE(resourceGroupName, subscriptionID string) (bool, error) {
 	exists, err := GetResourceGroupE(resourceGroupName, subscriptionID)
 	if err != nil {
-		if ResourceNotFoundErrorExists(err) {
+		if resourceGroupNotFoundError(err) {
 			return false, nil
 		}
 		return false, err
@@ -98,4 +101,18 @@ func ListResourceGroupsByTagE(tag string, subscriptionID string) ([]resources.Gr
 		return nil, err
 	}
 	return rg.Values(), nil
+}
+
+func resourceGroupNotFoundError(err error) bool {
+	if err != nil {
+		if autorestError, ok := err.(autorest.DetailedError); ok {
+			if requestError, ok := autorestError.Original.(*azure.RequestError); ok {
+				return (requestError.ServiceError.Code == "ResourceGroupNotFound")
+			}
+		}
+		if azcoreErr, ok := err.(*azcore.ResponseError); ok {
+			return azcoreErr.ErrorCode == "ResourceGroupNotFound"
+		}
+	}
+	return false
 }
