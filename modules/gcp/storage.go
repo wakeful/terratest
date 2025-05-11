@@ -26,7 +26,7 @@ func CreateStorageBucketE(t testing.TestingT, projectID string, name string, att
 	ctx := context.Background()
 
 	// Creates a client.
-	client, err := storage.NewClient(ctx)
+	client, err := newStorageClient()
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func DeleteStorageBucketE(t testing.TestingT, name string) error {
 
 	ctx := context.Background()
 
-	client, err := storage.NewClient(ctx)
+	client, err := newStorageClient()
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func ReadBucketObjectE(t testing.TestingT, bucketName string, filePath string) (
 
 	ctx := context.Background()
 
-	client, err := storage.NewClient(ctx)
+	client, err := newStorageClient()
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func WriteBucketObjectE(t testing.TestingT, bucketName string, filePath string, 
 
 	ctx := context.Background()
 
-	client, err := storage.NewClient(ctx)
+	client, err := newStorageClient()
 	if err != nil {
 		return "", err
 	}
@@ -147,7 +147,7 @@ func EmptyStorageBucketE(t testing.TestingT, name string) error {
 
 	ctx := context.Background()
 
-	client, err := storage.NewClient(ctx)
+	client, err := newStorageClient()
 	if err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func AssertStorageBucketExistsE(t testing.TestingT, name string) error {
 	ctx := context.Background()
 
 	// Creates a client.
-	client, err := storage.NewClient(ctx)
+	client, err := newStorageClient()
 	if err != nil {
 		return err
 	}
@@ -216,4 +216,13 @@ func AssertStorageBucketExistsE(t testing.TestingT, name string) error {
 	}
 
 	return nil
+}
+
+func newStorageClient() (*storage.Client, error) {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, withOptions()...)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
 }
