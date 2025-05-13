@@ -147,7 +147,7 @@ func NewCloudBuildService(t testing.TestingT) *cloudbuild.Client {
 func NewCloudBuildServiceE(t testing.TestingT) (*cloudbuild.Client, error) {
 	ctx := context.Background()
 
-	service, err := cloudbuild.NewClient(ctx)
+	service, err := cloudbuild.NewClient(ctx, withOptions()...)
 	if err != nil {
 		return nil, err
 	}

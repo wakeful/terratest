@@ -14,6 +14,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/testing"
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
@@ -584,6 +585,10 @@ func NewComputeService(t testing.TestingT) *compute.Service {
 // NewComputeServiceE creates a new Compute service, which is used to make GCE API calls.
 func NewComputeServiceE(t testing.TestingT) (*compute.Service, error) {
 	ctx := context.Background()
+
+	if ts, ok := getStaticTokenSource(); ok {
+		return compute.New(oauth2.NewClient(ctx, ts))
+	}
 
 	// Retrieve the Google OAuth token using a retry loop as it can sometimes return an error.
 	// e.g: oauth2: cannot fetch token: Post https://oauth2.googleapis.com/token: net/http: TLS handshake timeout
