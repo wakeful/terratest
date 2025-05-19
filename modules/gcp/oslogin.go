@@ -7,6 +7,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/testing"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/oslogin/v1"
@@ -144,6 +145,10 @@ func GetLoginProfileE(t testing.TestingT, user string) (*oslogin.LoginProfile, e
 // NewOSLoginServiceE creates a new OS Login service, which is used to make OS Login API calls.
 func NewOSLoginServiceE(t testing.TestingT) (*oslogin.Service, error) {
 	ctx := context.Background()
+
+	if ts, ok := getStaticTokenSource(); ok {
+		return oslogin.New(oauth2.NewClient(ctx, ts))
+	}
 
 	client, err := google.DefaultClient(ctx, compute.CloudPlatformScope)
 	if err != nil {
