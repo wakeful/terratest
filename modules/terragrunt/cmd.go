@@ -12,30 +12,40 @@ import (
 )
 
 func runTerragruntStackCommandE(t testing.TestingT, opts *Options, additionalArgs ...string) (string, error) {
-	args := []string{"stack", "run"}
-	{
-		// check if we are using older version of terragrunt
-		cmd := shell.Command{Command: opts.TerraformBinary, Args: []string{"-experiment", "stack"}}
-		if err := shell.RunCommandE(t, cmd); err == nil {
-			args = prepend(args, "-experiment", "stack")
-		}
+	return runTerragruntStackSubCommandE(t, opts, "run", additionalArgs...)
+}
+
+func terragruntStackCommandE(t testing.TestingT, opts *Options, additionalArgs ...string) (string, error) {
+	return runTerragruntStackSubCommandE(t, opts, "", additionalArgs...)
+}
+
+func runTerragruntStackSubCommandE(t testing.TestingT, opts *Options, subCommand string, additionalArgs ...string) (string, error) {
+	args := []string{"stack"}
+	if subCommand != "" {
+		args = append(args, subCommand)
+	}
+
+	// Check for experimental flag support
+	cmd := shell.Command{Command: opts.TerraformBinary, Args: []string{"-experiment", "stack"}}
+	if err := shell.RunCommandE(t, cmd); err == nil {
+		args = prepend(args, "-experiment", "stack")
 	}
 
 	options, args := terraform.GetCommonOptions(&opts.Options, args...)
 	args = append(args, prepend(additionalArgs, "--")...)
 
-	cmd := generateCommand(options, args...)
+	cmdExec := generateCommand(options, args...)
 	description := fmt.Sprintf("%s %v", options.TerraformBinary, args)
 
 	return retry.DoWithRetryableErrorsE(t, description, options.RetryableTerraformErrors, options.MaxRetries, options.TimeBetweenRetries, func() (string, error) {
-		s, err := shell.RunCommandAndGetOutputE(t, cmd)
+		s, err := shell.RunCommandAndGetOutputE(t, cmdExec)
 		if err != nil {
 			return s, err
 		}
 		if err := hasWarning(opts, s); err != nil {
 			return s, err
 		}
-		return s, err
+		return s, nil
 	})
 }
 

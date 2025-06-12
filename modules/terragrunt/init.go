@@ -49,3 +49,18 @@ func initArgs(options *Options) []string {
 	args = append(args, options.ExtraArgs.Init...)
 	return args
 }
+
+func generateArgs(options *Options) []string {
+	args := []string{"generate"}
+
+	// Append no-color option if needed
+	if options.NoColor {
+		args = append(args, "-no-color")
+	}
+
+	// Use Apply extra args for generate command as it's a similar operation
+	if len(options.ExtraArgs.Apply) > 0 {
+		args = append(args, options.ExtraArgs.Apply...)
+	}
+	return args
+}
