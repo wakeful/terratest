@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/files"
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,10 +15,8 @@ func TestTerragruntStackInit(t *testing.T) {
 	require.NoError(t, err)
 
 	out, err := TgStackInitE(t, &Options{
-		Options: terraform.Options{
-			TerraformDir:    path.Join(testFolder, "live"),
-			TerraformBinary: "terragrunt",
-		},
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
 	})
 	require.NoError(t, err)
 	require.Contains(t, out, ".terragrunt-stack")
