@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
 // Options represents the configuration options for terragrunt commands
@@ -43,24 +42,6 @@ type ExtraArgs struct {
 	Plan     []string // Extra arguments for plan command
 	Destroy  []string // Extra arguments for destroy command
 	Generate []string // Extra arguments for generate command
-}
-
-// NewOptions creates a new Options struct with default values
-func NewOptions() *Options {
-	return &Options{
-		TerragruntBinary:         "terragrunt",
-		Upgrade:                  false,
-		NoColor:                  false,
-		Reconfigure:              false,
-		MigrateState:             false,
-		MaxRetries:               3,
-		TimeBetweenRetries:       5 * time.Second,
-		BackendConfig:            make(map[string]interface{}),
-		EnvVars:                  make(map[string]string),
-		RetryableTerraformErrors: make(map[string]string),
-		WarningsAsErrors:         make(map[string]string),
-		ExtraArgs:                ExtraArgs{},
-	}
 }
 
 // GetCommonOptions extracts common terragrunt options and prepares arguments
@@ -108,26 +89,5 @@ func setTerragruntLogFormatting(options *Options) {
 		if !inEnv {
 			options.EnvVars[tgLogCustomFormatKey] = "%msg(color=disable)"
 		}
-	}
-}
-
-// ToTerraformOptions converts terragrunt Options to terraform.Options for compatibility
-// This is used internally when we need to use terraform utility functions
-func (o *Options) ToTerraformOptions() *terraform.Options {
-	return &terraform.Options{
-		TerraformDir:             o.TerragruntDir,
-		TerraformBinary:          o.TerragruntBinary,
-		NoColor:                  o.NoColor,
-		Upgrade:                  o.Upgrade,
-		Reconfigure:              o.Reconfigure,
-		MigrateState:             o.MigrateState,
-		BackendConfig:            o.BackendConfig,
-		PluginDir:                o.PluginDir,
-		EnvVars:                  o.EnvVars,
-		Logger:                   o.Logger,
-		MaxRetries:               o.MaxRetries,
-		TimeBetweenRetries:       o.TimeBetweenRetries,
-		RetryableTerraformErrors: o.RetryableTerraformErrors,
-		WarningsAsErrors:         o.WarningsAsErrors,
 	}
 }

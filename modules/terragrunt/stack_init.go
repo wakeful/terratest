@@ -18,9 +18,6 @@ func TgStackInit(t testing.TestingT, options *Options) string {
 
 // TgStackInitE calls terragrunt init and return stdout/stderr
 func TgStackInitE(t testing.TestingT, options *Options) (string, error) {
-	if options.TerragruntBinary != "terragrunt" {
-		return "", terraform.TgInvalidBinary(options.TerragruntBinary)
-	}
 	return runTerragruntStackCommandE(t, options, initArgs(options)...)
 }
 

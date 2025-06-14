@@ -3,6 +3,7 @@ package terragrunt
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/retry"
@@ -39,14 +40,14 @@ func runTerragruntStackSubCommandE(t testing.TestingT, opts *Options, subCommand
 	}
 	if err := shell.RunCommandE(t, experimentalTestCmd); err == nil {
 		// If experimental flag is supported, prepend it to the command arguments
-		commandArgs = prepend(commandArgs, "-experiment", "stack")
+		commandArgs = slices.Insert(commandArgs, 0, "-experiment", "stack")
 	}
 
 	// Apply common terragrunt options and get the final command arguments
 	terragruntOptions, finalArgs := GetCommonOptions(opts, commandArgs...)
 
 	// Append additional arguments with "--" separator
-	finalArgs = append(finalArgs, prepend(additionalArgs, "--")...)
+	finalArgs = append(finalArgs, slices.Insert(additionalArgs, 0, "--")...)
 
 	// Generate the final shell command
 	execCommand := generateCommand(terragruntOptions, finalArgs...)
@@ -73,10 +74,6 @@ func runTerragruntStackSubCommandE(t testing.TestingT, opts *Options, subCommand
 			return output, nil
 		},
 	)
-}
-
-func prepend(args []string, elementsToPrepend ...string) []string {
-	return append(elementsToPrepend, args...)
 }
 
 // hasWarning checks if the command output contains any warnings that should be treated as errors
