@@ -1,7 +1,6 @@
 package terragrunt
 
 import (
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/testing"
 )
 
@@ -16,9 +15,6 @@ func TgStackGenerate(t testing.TestingT, options *Options) string {
 
 // TgStackGenerateE calls terragrunt stack generate and returns stdout/stderr
 func TgStackGenerateE(t testing.TestingT, options *Options) (string, error) {
-	if options.TerragruntBinary != "terragrunt" {
-		return "", terraform.TgInvalidBinary(options.TerragruntBinary)
-	}
 	return terragruntStackCommandE(t, options, generateArgs(options)...)
 }
 
