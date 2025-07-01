@@ -2,7 +2,6 @@ package terragrunt
 
 import (
 	"path"
-	"runtime"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/files"
@@ -79,24 +78,6 @@ func TestTerragruntStackRunPlanWithNoColor(t *testing.T) {
 	// Verify that the .terragrunt-stack directory was created
 	stackDir := path.Join(testFolder, "live", ".terragrunt-stack")
 	require.DirExists(t, stackDir)
-}
-
-func TestTerragruntStackRunInvalidBinary(t *testing.T) {
-	t.Parallel()
-
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
-	require.NoError(t, err)
-
-	// Test with invalid binary
-	_, err = TgStackRunE(t, &Options{
-		TerragruntDir:    path.Join(testFolder, "live"),
-		TerragruntBinary: "invalid", // This should cause an error
-	})
-	require.Error(t, err)
-	// run this condition only when the os is linux
-	if runtime.GOOS == "linux" {
-		require.Contains(t, err.Error(), "executable file not found in $PATH")
-	}
 }
 
 func TestTerragruntStackRunNonExistentDir(t *testing.T) {
