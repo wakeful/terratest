@@ -18,11 +18,12 @@ func TgStackInit(t testing.TestingT, options *Options) string {
 
 // TgStackInitE calls terragrunt init and return stdout/stderr
 func TgStackInitE(t testing.TestingT, options *Options) (string, error) {
-	return runTerragruntStackCommandE(t, options, initArgs(options)...)
+	// Use regular terragrunt init command (not terragrunt stack init)
+	return runTerragruntCommandE(t, options, "init", initStackArgs(options)...)
 }
 
-func initArgs(options *Options) []string {
-	args := []string{"init", fmt.Sprintf("-upgrade=%t", options.Upgrade)}
+func initStackArgs(options *Options) []string {
+	args := []string{fmt.Sprintf("-upgrade=%t", options.Upgrade)}
 
 	// Append reconfigure option if specified
 	if options.Reconfigure {
