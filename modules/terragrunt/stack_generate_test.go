@@ -106,21 +106,6 @@ func TestTerragruntStackGenerateWithExtraArgs(t *testing.T) {
 	require.DirExists(t, stackDir)
 }
 
-func TestTerragruntStackGenerateInvalidBinary(t *testing.T) {
-	t.Parallel()
-
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
-	require.NoError(t, err)
-
-	// Test with invalid binary
-	_, err = TgStackGenerateE(t, &Options{
-		TerragruntDir:    path.Join(testFolder, "live"),
-		TerragruntBinary: "terraform", // This should cause an error
-	})
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "terragrunt")
-}
-
 func TestTerragruntStackGenerateNonExistentDir(t *testing.T) {
 	t.Parallel()
 

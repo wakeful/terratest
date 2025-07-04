@@ -15,10 +15,10 @@ func TgStackGenerate(t testing.TestingT, options *Options) string {
 
 // TgStackGenerateE calls terragrunt stack generate and returns stdout/stderr
 func TgStackGenerateE(t testing.TestingT, options *Options) (string, error) {
-	return terragruntStackCommandE(t, options, generateArgs(options)...)
+	return terragruntStackCommandE(t, options, generateStackArgs(options)...)
 }
 
-func generateArgs(options *Options) []string {
+func generateStackArgs(options *Options) []string {
 	args := []string{"generate"}
 
 	// Append no-color option if needed
