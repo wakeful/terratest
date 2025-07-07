@@ -14,17 +14,18 @@ import (
 // - Use ExtraArgs to pass ALL command-line arguments (including -no-color, -upgrade, etc.)
 //
 // Example:
-//   // For init
-//   TgStackInitE(t, &Options{
-//       TerragruntDir: "/path/to/config",
-//       ExtraArgs: []string{"-upgrade=true", "-no-color"},
-//   })
 //
-//   // For generate
-//   TgStackGenerateE(t, &Options{
-//       TerragruntDir: "/path/to/config",
-//       ExtraArgs: []string{"-no-color"},
-//   })
+//	// For init
+//	TgStackInitE(t, &Options{
+//	    TerragruntDir: "/path/to/config",
+//	    ExtraArgs: []string{"-upgrade=true", "-no-color"},
+//	})
+//
+//	// For generate
+//	TgStackGenerateE(t, &Options{
+//	    TerragruntDir: "/path/to/config",
+//	    ExtraArgs: []string{"-no-color"},
+//	})
 //
 // Constants for test framework configuration and environment variables
 const (
@@ -73,7 +74,6 @@ type Options struct {
 	// All terragrunt command-line arguments for the specific command being executed
 	ExtraArgs []string
 }
-
 
 // GetCommonOptions extracts common terragrunt options and prepares arguments
 // This is the terragrunt-specific version of terraform.GetCommonOptions
