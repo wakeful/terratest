@@ -16,6 +16,7 @@ func TestTerragruntInit(t *testing.T) {
 	out, err := TgStackInitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
+		ExtraArgs:        []string{"-upgrade=true"}, // Common init flag
 	})
 	require.NoError(t, err)
 	require.Contains(t, out, "Terraform has been successfully initialized!")
@@ -31,6 +32,7 @@ func TestTerragruntInitWithInvalidConfig(t *testing.T) {
 	_, err = TgStackInitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
+		ExtraArgs:        []string{"-upgrade=true"}, // Common init flag
 	})
 	require.Error(t, err)
 	// The error should contain information about the HCL parsing error

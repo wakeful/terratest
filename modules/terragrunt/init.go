@@ -1,8 +1,6 @@
 package terragrunt
 
 import (
-	"fmt"
-
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/testing"
 )
@@ -22,24 +20,19 @@ func TgStackInitE(t testing.TestingT, options *Options) (string, error) {
 	return runTerragruntCommandE(t, options, "init", initStackArgs(options)...)
 }
 
+// initStackArgs builds the argument list for terragrunt init command.
+// All terragrunt command-line flags are now passed via ExtraArgs.
+// This function only handles complex configuration that requires special formatting.
 func initStackArgs(options *Options) []string {
-	args := []string{fmt.Sprintf("-upgrade=%t", options.Upgrade)}
+	var args []string
 
-	// Append reconfigure option if specified
-	if options.Reconfigure {
-		args = append(args, "-reconfigure")
-	}
-	// Append combination of migrate-state and force-copy to suppress answer prompt
-	if options.MigrateState {
-		args = append(args, "-migrate-state", "-force-copy")
-	}
-	// Append no-color option if needed
-	if options.NoColor {
-		args = append(args, "-no-color")
-	}
-
+	// Add complex configuration that requires special formatting
 	args = append(args, terraform.FormatTerraformBackendConfigAsArgs(options.BackendConfig)...)
 	args = append(args, terraform.FormatTerraformPluginDirAsArgs(options.PluginDir)...)
-	args = append(args, options.ExtraArgs.Init...)
+
+	// Add all user-specified terragrunt command-line arguments
+	// This includes flags like -no-color, -upgrade=true, -reconfigure, etc.
+	args = append(args, options.ExtraArgs...)
+
 	return args
 }
