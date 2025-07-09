@@ -18,16 +18,15 @@ func TestTerragruntStackRunPlan(t *testing.T) {
 	_, err = TgStackInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
+		ExtraArgs:        []string{"-upgrade=true"},
 	})
 	require.NoError(t, err)
 
-	// Then generate the stack
+	// Then run plan on the stack
 	out, err := TgStackRunE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		ExtraArgs: ExtraArgs{
-			Plan: []string{"plan"},
-		},
+		ExtraArgs:        []string{"plan"},
 	})
 	require.NoError(t, err)
 
@@ -57,17 +56,15 @@ func TestTerragruntStackRunPlanWithNoColor(t *testing.T) {
 	_, err = TgStackInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
+		ExtraArgs:        []string{"-upgrade=true"},
 	})
 	require.NoError(t, err)
 
-	// Generate with no-color option
+	// Run plan with no-color option
 	out, err := TgStackRunE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		NoColor:          true,
-		ExtraArgs: ExtraArgs{
-			Plan: []string{"plan"},
-		},
+		ExtraArgs:        []string{"plan", "-no-color"},
 	})
 	require.NoError(t, err)
 

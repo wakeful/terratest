@@ -14,12 +14,17 @@ import (
 // terragruntStackCommandE executes a terragrunt stack command without any subcommand
 // This is used for commands like "terragrunt stack generate"
 func terragruntStackCommandE(t testing.TestingT, opts *Options, additionalArgs ...string) (string, error) {
-	return runTerragruntStackSubCommandE(t, opts, "", additionalArgs...)
+	return runTerragruntStackCommandE(t, opts, "", additionalArgs...)
 }
 
-// runTerragruntStackSubCommandE is the core function that executes terragrunt stack commands
-// It handles experimental flag detection, argument construction, and retry logic
-func runTerragruntStackSubCommandE(t testing.TestingT, opts *Options, subCommand string, additionalArgs ...string) (string, error) {
+// runTerragruntStackCommandE is the unified function that executes terragrunt stack commands
+// It handles argument construction, retry logic, and error handling for all stack commands
+func runTerragruntStackCommandE(t testing.TestingT, opts *Options, subCommand string, additionalArgs ...string) (string, error) {
+	// Validate required options
+	if err := validateOptions(opts); err != nil {
+		return "", err
+	}
+
 	// Build the base command arguments starting with "stack"
 	commandArgs := []string{"stack"}
 	if subCommand != "" {
@@ -29,8 +34,10 @@ func runTerragruntStackSubCommandE(t testing.TestingT, opts *Options, subCommand
 	// Apply common terragrunt options and get the final command arguments
 	terragruntOptions, finalArgs := GetCommonOptions(opts, commandArgs...)
 
-	// Append additional arguments with "--" separator
-	finalArgs = append(finalArgs, slices.Insert(additionalArgs, 0, "--")...)
+	// Append additional arguments with "--" separator for stack commands
+	if len(additionalArgs) > 0 {
+		finalArgs = append(finalArgs, slices.Insert(additionalArgs, 0, ArgSeparator)...)
+	}
 
 	// Generate the final shell command
 	execCommand := generateCommand(terragruntOptions, finalArgs...)
@@ -62,6 +69,11 @@ func runTerragruntStackSubCommandE(t testing.TestingT, opts *Options, subCommand
 // runTerragruntCommandE is the core function that executes regular terragrunt commands
 // It handles argument construction, retry logic, and error handling for non-stack commands
 func runTerragruntCommandE(t testing.TestingT, opts *Options, command string, additionalArgs ...string) (string, error) {
+	// Validate required options
+	if err := validateOptions(opts); err != nil {
+		return "", err
+	}
+
 	// Build the base command arguments starting with the command
 	commandArgs := []string{command}
 
@@ -117,6 +129,17 @@ func hasWarning(opts *Options, commandOutput string) error {
 
 		// If warnings are found, return an error with the specified message
 		return fmt.Errorf("warning(s) were found: %s:\n%s", errorMessage, strings.Join(matches, ""))
+	}
+	return nil
+}
+
+// validateOptions validates that required options are provided
+func validateOptions(opts *Options) error {
+	if opts == nil {
+		return fmt.Errorf("options cannot be nil")
+	}
+	if opts.TerragruntDir == "" {
+		return fmt.Errorf("TerragruntDir is required")
 	}
 	return nil
 }
