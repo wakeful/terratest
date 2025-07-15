@@ -223,5 +223,3 @@ func TestTgOutputErrorHandling(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, strings.ToLower(err.Error()), "output")
 }
-
-

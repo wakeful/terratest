@@ -48,7 +48,7 @@ func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, er
 	args := outputArgs(options, key)
 	// Add -json flag for JSON output
 	jsonArgs := append([]string{"-json"}, args...)
-	
+
 	rawOutput, err := runTerragruntStackCommandE(t, options, "output", jsonArgs...)
 	if err != nil {
 		return "", err
@@ -81,24 +81,28 @@ var (
 // cleanTerragruntOutput extracts the actual output value from terragrunt stack's verbose output
 //
 // Example input (raw terragrunt output):
-//   time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Initializing..."
-//   time=2023-07-11T10:30:46Z level=info prefix=terragrunt binary=terragrunt msg="Running command..."
-//   "my-bucket-name"
+//
+//	time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Initializing..."
+//	time=2023-07-11T10:30:46Z level=info prefix=terragrunt binary=terragrunt msg="Running command..."
+//	"my-bucket-name"
 //
 // Example output (cleaned):
-//   my-bucket-name
+//
+//	my-bucket-name
 //
 // For JSON values, it preserves the structure:
 // Input:
-//   time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Running..."
-//   {"vpc_id": "vpc-12345", "subnet_ids": ["subnet-1", "subnet-2"]}
+//
+//	time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Running..."
+//	{"vpc_id": "vpc-12345", "subnet_ids": ["subnet-1", "subnet-2"]}
 //
 // Output:
-//   {"vpc_id": "vpc-12345", "subnet_ids": ["subnet-1", "subnet-2"]}
+//
+//	{"vpc_id": "vpc-12345", "subnet_ids": ["subnet-1", "subnet-2"]}
 func cleanTerragruntOutput(rawOutput string) (string, error) {
 	// Remove terragrunt log lines
 	cleaned := tgLogLevel.ReplaceAllString(rawOutput, "")
-	
+
 	lines := strings.Split(cleaned, "\n")
 	var result []string
 	for _, line := range lines {
@@ -107,53 +111,55 @@ func cleanTerragruntOutput(rawOutput string) (string, error) {
 			result = append(result, trimmed)
 		}
 	}
-	
+
 	if len(result) == 0 {
 		return "", nil
 	}
-	
+
 	// Join all result lines
 	finalOutput := strings.Join(result, "\n")
-	
+
 	// Check if it's JSON (starts with { or [)
 	finalOutput = strings.TrimSpace(finalOutput)
 	if strings.HasPrefix(finalOutput, "{") || strings.HasPrefix(finalOutput, "[") {
 		// For JSON output, return as-is
 		return finalOutput, nil
 	}
-	
+
 	// For simple values, remove surrounding quotes if present
 	if strings.HasPrefix(finalOutput, "\"") && strings.HasSuffix(finalOutput, "\"") {
 		finalOutput = strings.Trim(finalOutput, "\"")
 	}
-	
+
 	return finalOutput, nil
 }
 
 // cleanTerragruntJson cleans the JSON output from terragrunt stack command
 //
 // Example input (raw terragrunt JSON output):
-//   time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Initializing..."
-//   time=2023-07-11T10:30:46Z level=info prefix=terragrunt binary=terragrunt msg="Running command..."
-//   {"mother.output":{"sensitive":false,"type":"string","value":"mother/test.txt"},"father.output":{"sensitive":false,"type":"string","value":"father/test.txt"}}
+//
+//	time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Initializing..."
+//	time=2023-07-11T10:30:46Z level=info prefix=terragrunt binary=terragrunt msg="Running command..."
+//	{"mother.output":{"sensitive":false,"type":"string","value":"mother/test.txt"},"father.output":{"sensitive":false,"type":"string","value":"father/test.txt"}}
 //
 // Example output (cleaned and formatted):
-//   {
-//     "mother.output": {
-//       "sensitive": false,
-//       "type": "string", 
-//       "value": "mother/test.txt"
-//     },
-//     "father.output": {
-//       "sensitive": false,
-//       "type": "string",
-//       "value": "father/test.txt"
-//     }
-//   }
+//
+//	{
+//	  "mother.output": {
+//	    "sensitive": false,
+//	    "type": "string",
+//	    "value": "mother/test.txt"
+//	  },
+//	  "father.output": {
+//	    "sensitive": false,
+//	    "type": "string",
+//	    "value": "father/test.txt"
+//	  }
+//	}
 func cleanTerragruntJson(input string) (string, error) {
 	// Remove terragrunt log lines
 	cleaned := tgLogLevel.ReplaceAllString(input, "")
-	
+
 	lines := strings.Split(cleaned, "\n")
 	var result []string
 	for _, line := range lines {
@@ -163,17 +169,17 @@ func cleanTerragruntJson(input string) (string, error) {
 		}
 	}
 	ansiClean := strings.Join(result, "\n")
-	
+
 	var jsonObj interface{}
 	if err := json.Unmarshal([]byte(ansiClean), &jsonObj); err != nil {
 		return "", err
 	}
-	
+
 	// Format JSON output with indentation
 	normalized, err := json.MarshalIndent(jsonObj, "", "  ")
 	if err != nil {
 		return "", err
 	}
-	
+
 	return string(normalized), nil
 }
