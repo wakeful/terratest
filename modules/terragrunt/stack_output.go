@@ -19,21 +19,19 @@ func TgOutput(t testing.TestingT, options *Options, key string) string {
 
 // TgOutputE calls terragrunt stack output for the given variable and returns its value as a string
 func TgOutputE(t testing.TestingT, options *Options, key string) (string, error) {
-	// Build the args for stack output command
-	args := []string{"-no-color"}
+	args := []string{"-no-color"} // Disable color for parsing
 	args = append(args, options.ExtraArgs...)
 	if key != "" {
 		args = append(args, key)
 	}
-	
-	// Use runTerragruntStackCommandWithSeparatorE with useArgSeparator=false
-	// The output subcommand doesn't use the -- separator
+
+	// Output command doesn't use -- separator
 	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, options, "output", false, args...)
 	if err != nil {
 		return "", err
 	}
 
-	// Clean the output to extract the actual value
+	// Extract the actual value from output
 	cleaned, err := cleanTerragruntOutput(rawOutput)
 	if err != nil {
 		return "", err
@@ -56,21 +54,19 @@ func TgOutputJson(t testing.TestingT, options *Options, key string) string {
 // result as the json string.
 // If key is an empty string, it will return all the output variables.
 func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
-	// Build the args for stack output command with JSON format
-	args := []string{"-no-color", "-json"}
+	args := []string{"-no-color", "-json"} // JSON format without color
 	args = append(args, options.ExtraArgs...)
 	if key != "" {
 		args = append(args, key)
 	}
-	
-	// Use runTerragruntStackCommandWithSeparatorE with useArgSeparator=false
-	// The output subcommand doesn't use the -- separator
+
+	// Output command doesn't use -- separator
 	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, options, "output", false, args...)
 	if err != nil {
 		return "", err
 	}
 
-	// Clean and format the JSON output
+	// Parse and format JSON output
 	return cleanTerragruntJson(rawOutput)
 }
 
@@ -186,4 +182,3 @@ func cleanTerragruntJson(input string) (string, error) {
 
 	return string(normalized), nil
 }
-
