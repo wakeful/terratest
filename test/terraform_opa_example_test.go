@@ -58,6 +58,9 @@ func TestOPAEvalTerraformModuleRemotePolicy(t *testing.T) {
 		TerraformDir: "../examples/terraform-opa-example/pass",
 	}
 	opaOpts := &opa.EvalOptions{
+		// Note: This test may temporarily fail until the OPA v1.0+ syntax changes are merged to main.
+		// The remote policy uses the new syntax (with 'if' and 'contains' keywords) which is required
+		// for OPA v1.0+, but the main branch may still have the old syntax.
 		RulePath: "git::https://github.com/gruntwork-io/terratest.git//examples/terraform-opa-example/policy/enforce_source.rego?ref=main",
 		FailMode: opa.FailUndefined,
 	}
