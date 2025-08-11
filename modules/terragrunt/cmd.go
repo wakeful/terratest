@@ -164,5 +164,6 @@ func generateCommand(terragruntOptions *Options, commandArgs ...string) shell.Co
 		WorkingDir: terragruntOptions.TerragruntDir,
 		Env:        terragruntOptions.EnvVars,
 		Logger:     terragruntOptions.Logger,
+		Stdin:      terragruntOptions.Stdin,
 	}
 }

@@ -1,6 +1,7 @@
 package test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -25,4 +26,23 @@ func TestTerragruntExample(t *testing.T) {
 	// website::tag::5:: Run `terraform output` to get the values of output variables and check they have the expected values.
 	output := terraform.Output(t, terraformOptions, "output")
 	assert.Equal(t, "one input another input", output)
+}
+
+func TestTerragruntConsole(t *testing.T) {
+	// website::tag::3:: Construct the terraform options with default retryable errors to handle the most common retryable errors in terraform testing.
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		// website::tag::1:: Set the path to the Terragrunt module that will be tested.
+		TerraformDir: "../examples/terragrunt-example",
+		// website::tag::2:: Set the terraform binary path to terragrunt so that terratest uses terragrunt instead of terraform. You must ensure that you have terragrunt downloaded and available in your PATH.
+		TerraformBinary: "terragrunt",
+		// website::tag::3:: Set stdin to a string reader to simulate user input.
+		Stdin: strings.NewReader("local.mylocal"),
+	})
+
+	// website::tag::6:: Clean up resources with "terragrunt destroy" at the end of the test.
+	defer terraform.Destroy(t, terraformOptions)
+
+	// website::tag::4:: Run "terragrunt console".
+	out := terraform.RunTerraformCommand(t, terraformOptions, "console")
+	assert.Contains(t, out, `"local variable named mylocal"`)
 }

@@ -24,6 +24,8 @@ type Command struct {
 	Env        map[string]string // Additional environment variables to set
 	// Use the specified logger for the command's output. Use logger.Discard to not print the output while executing the command.
 	Logger *logger.Logger
+
+	Stdin io.Reader
 }
 
 // RunCommand runs a shell command and redirects its stdout and stderr to the stdout of the atomic script itself. If
@@ -122,7 +124,11 @@ func runCommand(t testing.TestingT, command Command) (*output, error) {
 
 	cmd := exec.Command(command.Command, command.Args...)
 	cmd.Dir = command.WorkingDir
-	cmd.Stdin = os.Stdin
+	if command.Stdin != nil {
+		cmd.Stdin = command.Stdin
+	} else {
+		cmd.Stdin = os.Stdin
+	}
 	cmd.Env = formatEnvVars(command)
 
 	stdout, err := cmd.StdoutPipe()
