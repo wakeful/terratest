@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"io"
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
@@ -74,6 +75,7 @@ type Options struct {
 	SetVarsAfterVarFiles     bool                   // Pass -var options after -var-file options to Terraform commands
 	WarningsAsErrors         map[string]string      // Terraform warning messages that should be treated as errors. The keys are a regexp to match against the warning and the value is what to display to a user if that warning is matched.
 	ExtraArgs                ExtraArgs              // Extra arguments passed to Terraform commands
+	Stdin                    io.Reader              // Optional stdin to pass to Terraform commands
 }
 
 type ExtraArgs struct {

@@ -21,6 +21,7 @@ func generateCommand(options *Options, args ...string) shell.Command {
 		WorkingDir: options.TerraformDir,
 		Env:        options.EnvVars,
 		Logger:     options.Logger,
+		Stdin:      options.Stdin,
 	}
 	return cmd
 }

@@ -1,6 +1,7 @@
 package terragrunt
 
 import (
+	"io"
 	"os"
 	"time"
 
@@ -73,6 +74,9 @@ type Options struct {
 
 	// All terragrunt command-line arguments for the specific command being executed
 	ExtraArgs []string
+
+	// Optional stdin to pass to Terraform commands
+	Stdin io.Reader
 }
 
 // GetCommonOptions extracts common terragrunt options and prepares arguments

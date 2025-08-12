@@ -210,3 +210,16 @@ func TestCommandWithStdoutAndStdErr(t *testing.T) {
 	})
 
 }
+
+func TestRunCommandWithStdinAndGetOutput(t *testing.T) {
+	t.Parallel()
+
+	text := "Hello, World"
+	cmd := Command{
+		Command: "cat",
+		Stdin:   strings.NewReader(text),
+	}
+
+	out := RunCommandAndGetOutput(t, cmd)
+	assert.Equal(t, text, strings.TrimSpace(out))
+}
