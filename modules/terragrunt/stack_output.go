@@ -19,14 +19,17 @@ func TgOutput(t testing.TestingT, options *Options, key string) string {
 
 // TgOutputE calls terragrunt stack output for the given variable and returns its value as a string
 func TgOutputE(t testing.TestingT, options *Options, key string) (string, error) {
-	args := []string{"-no-color"} // Disable color for parsing
-	args = append(args, options.ExtraArgs...)
+	// Prepare options with no-color flag for parsing
+	optsCopy := *options
+	optsCopy.TerragruntArgs = append([]string{"-no-color"}, options.TerragruntArgs...)
+	
+	var args []string
 	if key != "" {
 		args = append(args, key)
 	}
 
 	// Output command doesn't use -- separator
-	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, options, "output", false, args...)
+	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, &optsCopy, "output", false, args...)
 	if err != nil {
 		return "", err
 	}
@@ -54,14 +57,17 @@ func TgOutputJson(t testing.TestingT, options *Options, key string) string {
 // result as the json string.
 // If key is an empty string, it will return all the output variables.
 func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
-	args := []string{"-no-color", "-json"} // JSON format without color
-	args = append(args, options.ExtraArgs...)
+	// Prepare options with no-color and json flags
+	optsCopy := *options
+	optsCopy.TerragruntArgs = append([]string{"-no-color", "-json"}, options.TerragruntArgs...)
+	
+	var args []string
 	if key != "" {
 		args = append(args, key)
 	}
 
 	// Output command doesn't use -- separator
-	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, options, "output", false, args...)
+	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, &optsCopy, "output", false, args...)
 	if err != nil {
 		return "", err
 	}

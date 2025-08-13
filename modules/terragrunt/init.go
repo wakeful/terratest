@@ -21,18 +21,17 @@ func TgStackInitE(t testing.TestingT, options *Options) (string, error) {
 }
 
 // initStackArgs builds the argument list for terragrunt init command.
-// All terragrunt command-line flags are now passed via ExtraArgs.
-// This function only handles complex configuration that requires special formatting.
+// This function handles complex configuration that requires special formatting.
 func initStackArgs(options *Options) []string {
 	var args []string
 
 	// Add complex configuration that requires special formatting
+	// These are terraform-specific arguments that need special formatting
 	args = append(args, terraform.FormatTerraformBackendConfigAsArgs(options.BackendConfig)...)
 	args = append(args, terraform.FormatTerraformPluginDirAsArgs(options.PluginDir)...)
 
-	// Add all user-specified terragrunt command-line arguments
-	// This includes flags like -no-color, -upgrade=true, -reconfigure, etc.
-	args = append(args, options.ExtraArgs...)
+	// User-specified arguments are now handled by GetArgsForCommand
+	// which properly separates TerragruntArgs and TerraformArgs
 
 	return args
 }

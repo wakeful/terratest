@@ -3,7 +3,6 @@ package terragrunt
 import (
 	"fmt"
 	"regexp"
-	"slices"
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/retry"
@@ -41,13 +40,13 @@ func runTerragruntStackCommandWithSeparatorE(t testing.TestingT, opts *Options, 
 	// Apply common terragrunt options and get the final command arguments
 	terragruntOptions, finalArgs := GetCommonOptions(opts, commandArgs...)
 
-	// Append additional arguments with or without "--" separator based on useArgSeparator
+	// Append arguments from options using the new separation logic
+	argsFromOptions := GetArgsForCommand(terragruntOptions, useArgSeparator)
+	finalArgs = append(finalArgs, argsFromOptions...)
+	
+	// Append any additional arguments passed directly to this function
 	if len(additionalArgs) > 0 {
-		if useArgSeparator {
-			finalArgs = append(finalArgs, slices.Insert(additionalArgs, 0, ArgSeparator)...)
-		} else {
-			finalArgs = append(finalArgs, additionalArgs...)
-		}
+		finalArgs = append(finalArgs, additionalArgs...)
 	}
 
 	// Generate the final shell command
@@ -91,7 +90,11 @@ func runTerragruntCommandE(t testing.TestingT, opts *Options, command string, ad
 	// Apply common terragrunt options and get the final command arguments
 	terragruntOptions, finalArgs := GetCommonOptions(opts, commandArgs...)
 
-	// Append additional arguments
+	// For non-stack commands, we typically don't use the separator
+	argsFromOptions := GetArgsForCommand(terragruntOptions, false)
+	finalArgs = append(finalArgs, argsFromOptions...)
+	
+	// Append any additional arguments passed directly to this function
 	finalArgs = append(finalArgs, additionalArgs...)
 
 	// Generate the final shell command

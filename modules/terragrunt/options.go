@@ -10,22 +10,24 @@ import (
 
 // Key concepts:
 // - Options: Configure HOW the test framework executes terragrunt (directories, retry logic, logging)
-// - ExtraArgs: Specify ALL command-line arguments passed to the specific terragrunt command
+// - TerragruntArgs: Arguments for terragrunt itself (e.g., --no-color for terragrunt output)
+// - TerraformArgs: Arguments passed to underlying terraform commands after -- separator
 // - Use Options.TerragruntDir to specify WHERE to run terragrunt
-// - Use ExtraArgs to pass ALL command-line arguments (including -no-color, -upgrade, etc.)
 //
 // Example:
 //
-//	// For init
+//	// For init with terraform-specific flags
 //	TgStackInitE(t, &Options{
 //	    TerragruntDir: "/path/to/config",
-//	    ExtraArgs: []string{"-upgrade=true", "-no-color"},
+//	    TerragruntArgs: []string{"--no-color"},
+//	    TerraformArgs: []string{"-upgrade=true"},
 //	})
 //
-//	// For generate
-//	TgStackGenerateE(t, &Options{
+//	// For stack run with terraform plan
+//	TgStackRunE(t, &Options{
 //	    TerragruntDir: "/path/to/config",
-//	    ExtraArgs: []string{"-no-color"},
+//	    TerragruntArgs: []string{"--no-color"},
+//	    TerraformArgs: []string{"plan", "-out=tfplan"},
 //	})
 //
 // Constants for test framework configuration and environment variables
@@ -72,8 +74,12 @@ type Options struct {
 	BackendConfig map[string]interface{} // Backend configuration (formatted specially)
 	PluginDir     string                 // Plugin directory (formatted specially)
 
-	// All terragrunt command-line arguments for the specific command being executed
-	ExtraArgs []string
+	// Terragrunt-specific command-line arguments (e.g., --no-color for terragrunt itself)
+	TerragruntArgs []string
+
+	// Terraform command-line arguments to be passed after -- separator
+	// These are passed directly to the underlying terraform commands
+	TerraformArgs []string
 
 	// Optional stdin to pass to Terraform commands
 	Stdin io.Reader
@@ -94,6 +100,25 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 	setTerragruntLogFormatting(options)
 
 	return options, args
+}
+
+// GetArgsForCommand returns the appropriate arguments based on the command type
+// It handles the separation of terragrunt and terraform arguments
+func GetArgsForCommand(options *Options, useArgSeparator bool) []string {
+	var args []string
+
+	// First add terragrunt-specific arguments
+	args = append(args, options.TerragruntArgs...)
+
+	// Then add terraform arguments with separator if needed
+	if len(options.TerraformArgs) > 0 {
+		if useArgSeparator {
+			args = append(args, ArgSeparator)
+		}
+		args = append(args, options.TerraformArgs...)
+	}
+
+	return args
 }
 
 // setTerragruntLogFormatting sets default log formatting for terragrunt

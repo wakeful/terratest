@@ -33,7 +33,7 @@ func TestTgOutputIntegration(t *testing.T) {
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
-		ExtraArgs:        []string{"apply", "-auto-approve"},
+		TerraformArgs:    []string{"apply", "-auto-approve"},
 	}
 	_, err = TgStackRunE(t, applyOptions)
 	require.NoError(t, err)
@@ -44,7 +44,7 @@ func TestTgOutputIntegration(t *testing.T) {
 			TerragruntDir:    testFolder + "/live",
 			TerragruntBinary: "terragrunt",
 			Logger:           logger.Discard,
-			ExtraArgs:        []string{"destroy", "-auto-approve"},
+			TerraformArgs:    []string{"destroy", "-auto-approve"},
 		}
 		_, _ = TgStackRunE(t, destroyOptions)
 	}()
@@ -58,7 +58,7 @@ func TestTgOutputIntegration(t *testing.T) {
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
-		ExtraArgs:        []string{"-json"},
+		TerragruntArgs:   []string{"-json"},
 	}
 
 	strOutputJson := TgOutput(t, jsonOptions, "mother")
@@ -118,7 +118,7 @@ func TestTgOutputErrorHandling(t *testing.T) {
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
-		ExtraArgs:        []string{"apply", "-auto-approve"},
+		TerraformArgs:    []string{"apply", "-auto-approve"},
 	}
 	_, err = TgStackRunE(t, applyOptions)
 	require.NoError(t, err)
@@ -129,7 +129,7 @@ func TestTgOutputErrorHandling(t *testing.T) {
 			TerragruntDir:    testFolder + "/live",
 			TerragruntBinary: "terragrunt",
 			Logger:           logger.Discard,
-			ExtraArgs:        []string{"destroy", "-auto-approve"},
+			TerraformArgs:    []string{"destroy", "-auto-approve"},
 		}
 		_, _ = TgStackRunE(t, destroyOptions)
 	}()
