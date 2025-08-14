@@ -43,7 +43,7 @@ func runTerragruntStackCommandWithSeparatorE(t testing.TestingT, opts *Options, 
 	// Append arguments from options using the new separation logic
 	argsFromOptions := GetArgsForCommand(terragruntOptions, useArgSeparator)
 	finalArgs = append(finalArgs, argsFromOptions...)
-	
+
 	// Append any additional arguments passed directly to this function
 	if len(additionalArgs) > 0 {
 		finalArgs = append(finalArgs, additionalArgs...)
@@ -93,7 +93,7 @@ func runTerragruntCommandE(t testing.TestingT, opts *Options, command string, ad
 	// For non-stack commands, we typically don't use the separator
 	argsFromOptions := GetArgsForCommand(terragruntOptions, false)
 	finalArgs = append(finalArgs, argsFromOptions...)
-	
+
 	// Append any additional arguments passed directly to this function
 	finalArgs = append(finalArgs, additionalArgs...)
 

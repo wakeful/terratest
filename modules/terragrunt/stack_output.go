@@ -22,7 +22,7 @@ func TgOutputE(t testing.TestingT, options *Options, key string) (string, error)
 	// Prepare options with no-color flag for parsing
 	optsCopy := *options
 	optsCopy.TerragruntArgs = append([]string{"-no-color"}, options.TerragruntArgs...)
-	
+
 	var args []string
 	if key != "" {
 		args = append(args, key)
@@ -60,7 +60,7 @@ func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, er
 	// Prepare options with no-color and json flags
 	optsCopy := *options
 	optsCopy.TerragruntArgs = append([]string{"-no-color", "-json"}, options.TerragruntArgs...)
-	
+
 	var args []string
 	if key != "" {
 		args = append(args, key)
