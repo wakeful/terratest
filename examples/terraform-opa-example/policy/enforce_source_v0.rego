@@ -12,7 +12,7 @@
 # }
 package enforce_source
 
-# This version is compatible with OPA v0.x when using --v0-compatible flag
+# This version uses OPA v0.x syntax (also compatible with v1.x when using --v0-compatible flag)
 
 # website::tag::1:: Only define the allow variable and set to true if the violation set is empty.
 allow = true {

@@ -100,7 +100,7 @@ func TestEvalWithOutput(t *testing.T) {
 			name: "Success",
 			policy: `
 				package test
-				allow if {
+				allow := true if {
 					startswith(input.user, "admin")
 				}
 			`,
@@ -153,7 +153,7 @@ func TestEvalWithOutput(t *testing.T) {
 			name: "ContainsError",
 			policy: `
 				package test
-				allow if {
+				allow := true if {
 					input.user == "admin"
 				}
 			`,
