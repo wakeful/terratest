@@ -19,9 +19,10 @@ func TgStackRunE(t testing.TestingT, options *Options) (string, error) {
 }
 
 // runStackArgs builds the argument list for terragrunt stack run command.
-// All terragrunt command-line flags are now passed via ExtraArgs.
+// This function is now just returning an empty slice since arguments
+// are handled by GetArgsForCommand in cmd.go
 func runStackArgs(options *Options) []string {
-	// Return all user-specified terragrunt command-line arguments
-	// The user passes the specific args they need for their stack run operation
-	return options.ExtraArgs
+	// Arguments are now handled by GetArgsForCommand which properly
+	// separates TerragruntArgs and TerraformArgs
+	return []string{}
 }

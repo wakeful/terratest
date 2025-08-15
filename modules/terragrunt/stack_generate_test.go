@@ -18,7 +18,7 @@ func TestTerragruntStackGenerate(t *testing.T) {
 	_, err = TgStackInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		ExtraArgs:        []string{"-upgrade=true"},
+		TerraformArgs:    []string{"-upgrade=true"},
 	})
 	require.NoError(t, err)
 
@@ -55,7 +55,7 @@ func TestTerragruntStackGenerateWithNoColor(t *testing.T) {
 	_, err = TgStackInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		ExtraArgs:        []string{"-upgrade=true"},
+		TerraformArgs:    []string{"-upgrade=true"},
 	})
 	require.NoError(t, err)
 
@@ -63,7 +63,7 @@ func TestTerragruntStackGenerateWithNoColor(t *testing.T) {
 	out, err := TgStackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		ExtraArgs:        []string{"-no-color"},
+		TerragruntArgs:   []string{"--no-color"},
 	})
 	require.NoError(t, err)
 
@@ -86,7 +86,7 @@ func TestTerragruntStackGenerateWithExtraArgs(t *testing.T) {
 	_, err = TgStackInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		ExtraArgs:        []string{"-upgrade=true"},
+		TerraformArgs:    []string{"-upgrade=true"},
 	})
 	require.NoError(t, err)
 
@@ -94,7 +94,7 @@ func TestTerragruntStackGenerateWithExtraArgs(t *testing.T) {
 	out, err := TgStackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
-		ExtraArgs:        []string{"--terragrunt-log-level", "info"},
+		TerragruntArgs:   []string{"--terragrunt-log-level", "info"},
 	})
 	require.NoError(t, err)
 

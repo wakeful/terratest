@@ -19,13 +19,11 @@ func TgStackGenerateE(t testing.TestingT, options *Options) (string, error) {
 }
 
 // generateStackArgs builds the argument list for terragrunt stack generate command.
-// All terragrunt command-line flags are now passed via ExtraArgs.
 func generateStackArgs(options *Options) []string {
 	args := []string{"generate"}
 
-	// Add all user-specified terragrunt command-line arguments
-	// This includes flags like -no-color, etc.
-	args = append(args, options.ExtraArgs...)
+	// User-specified arguments are now handled by GetArgsForCommand
+	// which properly separates TerragruntArgs and TerraformArgs
 
 	return args
 }
