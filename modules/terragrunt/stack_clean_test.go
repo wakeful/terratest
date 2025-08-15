@@ -71,7 +71,7 @@ func TestTgStackCleanAfterRun(t *testing.T) {
 	stackDir := path.Join(testFolder, "live", ".terragrunt-stack")
 
 	// Initialize the stack
-	_, err = TgStackInitE(t, &Options{
+	_, err = TgInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},

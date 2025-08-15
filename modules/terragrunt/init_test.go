@@ -14,7 +14,7 @@ func TestTgInit(t *testing.T) {
 		"../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
 	require.NoError(t, err)
 
-	out, err := TgStackInitE(t, &Options{
+	out, err := TgInitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag
@@ -31,7 +31,7 @@ func TestTgInitWithInvalidConfig(t *testing.T) {
 	require.NoError(t, err)
 
 	// This should fail due to invalid HCL syntax in tg.hcl
-	_, err = TgStackInitE(t, &Options{
+	_, err = TgInitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag

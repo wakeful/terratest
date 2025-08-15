@@ -17,7 +17,7 @@ import (
 // Example:
 //
 //	// For init with terraform-specific flags
-//	TgStackInitE(t, &Options{
+//	TgInitE(t, &Options{
 //	    TerragruntDir: "/path/to/config",
 //	    TerragruntArgs: []string{"--no-color"},
 //	    TerraformArgs: []string{"-upgrade=true"},

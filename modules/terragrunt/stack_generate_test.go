@@ -16,7 +16,7 @@ func TestTgStackGenerate(t *testing.T) {
 	require.NoError(t, err)
 
 	// First initialize the stack
-	_, err = TgStackInitE(t, &Options{
+	_, err = TgInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},
@@ -54,7 +54,7 @@ func TestTgStackGenerateWithNoColor(t *testing.T) {
 	require.NoError(t, err)
 
 	// First initialize the stack
-	_, err = TgStackInitE(t, &Options{
+	_, err = TgInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},
@@ -86,7 +86,7 @@ func TestTgStackGenerateWithExtraArgs(t *testing.T) {
 	require.NoError(t, err)
 
 	// First initialize the stack
-	_, err = TgStackInitE(t, &Options{
+	_, err = TgInitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},

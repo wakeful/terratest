@@ -27,7 +27,7 @@ func TestTgOutputIntegration(t *testing.T) {
 	}
 
 	// Initialize and apply tg using stack commands
-	_, err = TgStackInitE(t, options)
+	_, err = TgInitE(t, options)
 	require.NoError(t, err)
 
 	applyOptions := &Options{
@@ -113,7 +113,7 @@ func TestTgOutputErrorHandling(t *testing.T) {
 	}
 
 	// Initialize and apply tg using stack commands
-	_, err = TgStackInitE(t, options)
+	_, err = TgInitE(t, options)
 	require.NoError(t, err)
 
 	applyOptions := &Options{

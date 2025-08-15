@@ -5,24 +5,24 @@ import (
 	"github.com/gruntwork-io/terratest/modules/testing"
 )
 
-// TgStackInit calls tg init and return stdout/stderr
-func TgStackInit(t testing.TestingT, options *Options) string {
-	out, err := TgStackInitE(t, options)
+// TgInit calls tg init and return stdout/stderr
+func TgInit(t testing.TestingT, options *Options) string {
+	out, err := TgInitE(t, options)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return out
 }
 
-// TgStackInitE calls tg init and return stdout/stderr
-func TgStackInitE(t testing.TestingT, options *Options) (string, error) {
+// TgInitE calls tg init and return stdout/stderr
+func TgInitE(t testing.TestingT, options *Options) (string, error) {
 	// Use regular tg init command (not tg stack init)
-	return runTerragruntCommandE(t, options, "init", initStackArgs(options)...)
+	return runTerragruntCommandE(t, options, "init", initArgs(options)...)
 }
 
-// initStackArgs builds the argument list for tg init command.
+// initArgs builds the argument list for tg init command.
 // This function handles complex configuration that requires special formatting.
-func initStackArgs(options *Options) []string {
+func initArgs(options *Options) []string {
 	var args []string
 
 	// Add complex configuration that requires special formatting
