@@ -8,10 +8,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTerragruntStackGenerate(t *testing.T) {
+func TestTgStackGenerate(t *testing.T) {
 	t.Parallel()
 
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
 	// First initialize the stack
@@ -45,10 +46,11 @@ func TestTerragruntStackGenerate(t *testing.T) {
 	}
 }
 
-func TestTerragruntStackGenerateWithNoColor(t *testing.T) {
+func TestTgStackGenerateWithNoColor(t *testing.T) {
 	t.Parallel()
 
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
 	// First initialize the stack
@@ -76,10 +78,11 @@ func TestTerragruntStackGenerateWithNoColor(t *testing.T) {
 	require.DirExists(t, stackDir)
 }
 
-func TestTerragruntStackGenerateWithExtraArgs(t *testing.T) {
+func TestTgStackGenerateWithExtraArgs(t *testing.T) {
 	t.Parallel()
 
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
 	// First initialize the stack
@@ -107,7 +110,7 @@ func TestTerragruntStackGenerateWithExtraArgs(t *testing.T) {
 	require.DirExists(t, stackDir)
 }
 
-func TestTerragruntStackGenerateNonExistentDir(t *testing.T) {
+func TestTgStackGenerateNonExistentDir(t *testing.T) {
 	t.Parallel()
 
 	// Test with non-existent directory

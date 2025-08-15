@@ -8,10 +8,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTerragruntStackRunPlan(t *testing.T) {
+func TestTgStackRunPlan(t *testing.T) {
 	t.Parallel()
 
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
 	// First initialize the stack
@@ -46,10 +47,11 @@ func TestTerragruntStackRunPlan(t *testing.T) {
 	}
 }
 
-func TestTerragruntStackRunPlanWithNoColor(t *testing.T) {
+func TestTgStackRunPlanWithNoColor(t *testing.T) {
 	t.Parallel()
 
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
 	// First initialize the stack
@@ -78,7 +80,7 @@ func TestTerragruntStackRunPlanWithNoColor(t *testing.T) {
 	require.DirExists(t, stackDir)
 }
 
-func TestTerragruntStackRunNonExistentDir(t *testing.T) {
+func TestTgStackRunNonExistentDir(t *testing.T) {
 	t.Parallel()
 
 	// Test with non-existent directory
@@ -89,7 +91,7 @@ func TestTerragruntStackRunNonExistentDir(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestTerragruntStackRunEmptyOptions(t *testing.T) {
+func TestTgStackRunEmptyOptions(t *testing.T) {
 	t.Parallel()
 
 	// Test with minimal options to verify default behavior
