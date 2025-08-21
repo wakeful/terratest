@@ -11,12 +11,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Integration test using actual terragrunt stack fixture
+// Integration test using actual tg stack fixture
 func TestTgOutputIntegration(t *testing.T) {
 	t.Parallel()
 
 	// Create a temporary copy of the stack fixture
-	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-test")
+	testFolder, err := files.CopyTerragruntFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-test")
 	require.NoError(t, err)
 
 	options := &Options{
@@ -25,15 +26,15 @@ func TestTgOutputIntegration(t *testing.T) {
 		Logger:           logger.Discard,
 	}
 
-	// Initialize and apply terragrunt using stack commands
-	_, err = TgStackInitE(t, options)
+	// Initialize and apply tg using stack commands
+	_, err = TgInitE(t, options)
 	require.NoError(t, err)
 
 	applyOptions := &Options{
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
-		ExtraArgs:        []string{"apply", "-auto-approve"},
+		TerraformArgs:    []string{"apply", "-auto-approve"},
 	}
 	_, err = TgStackRunE(t, applyOptions)
 	require.NoError(t, err)
@@ -44,7 +45,7 @@ func TestTgOutputIntegration(t *testing.T) {
 			TerragruntDir:    testFolder + "/live",
 			TerragruntBinary: "terragrunt",
 			Logger:           logger.Discard,
-			ExtraArgs:        []string{"destroy", "-auto-approve"},
+			TerraformArgs:    []string{"destroy", "-auto-approve"},
 		}
 		_, _ = TgStackRunE(t, destroyOptions)
 	}()
@@ -58,7 +59,7 @@ func TestTgOutputIntegration(t *testing.T) {
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
-		ExtraArgs:        []string{"-json"},
+		TerragruntArgs:   []string{"-json"},
 	}
 
 	strOutputJson := TgOutput(t, jsonOptions, "mother")
@@ -101,7 +102,8 @@ func TestTgOutputErrorHandling(t *testing.T) {
 	t.Parallel()
 
 	// Create a temporary copy of the stack fixture
-	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-error-test")
+	testFolder, err := files.CopyTerragruntFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-error-test")
 	require.NoError(t, err)
 
 	options := &Options{
@@ -110,15 +112,15 @@ func TestTgOutputErrorHandling(t *testing.T) {
 		Logger:           logger.Discard,
 	}
 
-	// Initialize and apply terragrunt using stack commands
-	_, err = TgStackInitE(t, options)
+	// Initialize and apply tg using stack commands
+	_, err = TgInitE(t, options)
 	require.NoError(t, err)
 
 	applyOptions := &Options{
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
-		ExtraArgs:        []string{"apply", "-auto-approve"},
+		TerraformArgs:    []string{"apply", "-auto-approve"},
 	}
 	_, err = TgStackRunE(t, applyOptions)
 	require.NoError(t, err)
@@ -129,14 +131,14 @@ func TestTgOutputErrorHandling(t *testing.T) {
 			TerragruntDir:    testFolder + "/live",
 			TerragruntBinary: "terragrunt",
 			Logger:           logger.Discard,
-			ExtraArgs:        []string{"destroy", "-auto-approve"},
+			TerraformArgs:    []string{"destroy", "-auto-approve"},
 		}
 		_, _ = TgStackRunE(t, destroyOptions)
 	}()
 
 	// Test that non-existent stack output returns error or empty string
 	output, err := TgOutputE(t, options, "non_existent_output")
-	// Terragrunt stack output might return empty string for non-existent outputs
+	// Tg stack output might return empty string for non-existent outputs
 	// rather than an error, so we need to handle both cases
 	if err != nil {
 		assert.Contains(t, strings.ToLower(err.Error()), "output")

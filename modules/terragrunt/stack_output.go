@@ -8,7 +8,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/testing"
 )
 
-// TgOutput calls terragrunt stack output for the given variable and returns its value as a string
+// TgOutput calls tg stack output for the given variable and returns its value as a string
 func TgOutput(t testing.TestingT, options *Options, key string) string {
 	out, err := TgOutputE(t, options, key)
 	if err != nil {
@@ -17,16 +17,20 @@ func TgOutput(t testing.TestingT, options *Options, key string) string {
 	return out
 }
 
-// TgOutputE calls terragrunt stack output for the given variable and returns its value as a string
+// TgOutputE calls tg stack output for the given variable and returns its value as a string
 func TgOutputE(t testing.TestingT, options *Options, key string) (string, error) {
-	args := []string{"-no-color"} // Disable color for parsing
-	args = append(args, options.ExtraArgs...)
+	// Prepare options with no-color flag for parsing
+	optsCopy := *options
+	optsCopy.TerragruntArgs = append([]string{"-no-color"}, options.TerragruntArgs...)
+
+	var args []string
 	if key != "" {
 		args = append(args, key)
 	}
 
 	// Output command doesn't use -- separator
-	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, options, "output", false, args...)
+	rawOutput, err := runTerragruntStackCommandWithSeparatorE(
+		t, &optsCopy, "output", false, args...)
 	if err != nil {
 		return "", err
 	}
@@ -39,8 +43,7 @@ func TgOutputE(t testing.TestingT, options *Options, key string) (string, error)
 	return cleaned, nil
 }
 
-// TgOutputJson calls terragrunt stack output for the given variable and returns the
-// result as the json string.
+// TgOutputJson calls tg stack output for the given variable and returns the result as the json string.
 // If key is an empty string, it will return all the output variables.
 func TgOutputJson(t testing.TestingT, options *Options, key string) string {
 	str, err := TgOutputJsonE(t, options, key)
@@ -50,18 +53,22 @@ func TgOutputJson(t testing.TestingT, options *Options, key string) string {
 	return str
 }
 
-// TgOutputJsonE calls terragrunt stack output for the given variable and returns the
+// TgOutputJsonE calls tg stack output for the given variable and returns the
 // result as the json string.
 // If key is an empty string, it will return all the output variables.
 func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
-	args := []string{"-no-color", "-json"} // JSON format without color
-	args = append(args, options.ExtraArgs...)
+	// Prepare options with no-color and json flags
+	optsCopy := *options
+	optsCopy.TerragruntArgs = append([]string{"-no-color", "-json"}, options.TerragruntArgs...)
+
+	var args []string
 	if key != "" {
 		args = append(args, key)
 	}
 
 	// Output command doesn't use -- separator
-	rawOutput, err := runTerragruntStackCommandWithSeparatorE(t, options, "output", false, args...)
+	rawOutput, err := runTerragruntStackCommandWithSeparatorE(
+		t, &optsCopy, "output", false, args...)
 	if err != nil {
 		return "", err
 	}
@@ -75,9 +82,9 @@ var (
 	tgLogLevel = regexp.MustCompile(`.*time=\S+ level=\S+ prefix=\S+ binary=\S+ msg=.*`)
 )
 
-// cleanTerragruntOutput extracts the actual output value from terragrunt stack's verbose output
+// cleanTerragruntOutput extracts the actual output value from tg stack's verbose output
 //
-// Example input (raw terragrunt output):
+// Example input (raw tg output):
 //
 //	time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Initializing..."
 //	time=2023-07-11T10:30:46Z level=info prefix=terragrunt binary=terragrunt msg="Running command..."
@@ -97,7 +104,7 @@ var (
 //
 //	{"vpc_id": "vpc-12345", "subnet_ids": ["subnet-1", "subnet-2"]}
 func cleanTerragruntOutput(rawOutput string) (string, error) {
-	// Remove terragrunt log lines
+	// Remove tg log lines
 	cleaned := tgLogLevel.ReplaceAllString(rawOutput, "")
 
 	lines := strings.Split(cleaned, "\n")
@@ -132,9 +139,9 @@ func cleanTerragruntOutput(rawOutput string) (string, error) {
 	return finalOutput, nil
 }
 
-// cleanTerragruntJson cleans the JSON output from terragrunt stack command
+// cleanTerragruntJson cleans the JSON output from tg stack command
 //
-// Example input (raw terragrunt JSON output):
+// Example input (raw tg JSON output):
 //
 //	time=2023-07-11T10:30:45Z level=info prefix=terragrunt binary=terragrunt msg="Initializing..."
 //	time=2023-07-11T10:30:46Z level=info prefix=terragrunt binary=terragrunt msg="Running command..."
@@ -155,7 +162,7 @@ func cleanTerragruntOutput(rawOutput string) (string, error) {
 //	  }
 //	}
 func cleanTerragruntJson(input string) (string, error) {
-	// Remove terragrunt log lines
+	// Remove tg log lines
 	cleaned := tgLogLevel.ReplaceAllString(input, "")
 
 	lines := strings.Split(cleaned, "\n")
