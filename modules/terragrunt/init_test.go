@@ -7,13 +7,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTerragruntInit(t *testing.T) {
+func TestTgInit(t *testing.T) {
 	t.Parallel()
 
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
 	require.NoError(t, err)
 
-	out, err := TgStackInitE(t, &Options{
+	out, err := TgInitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag
@@ -22,14 +23,15 @@ func TestTerragruntInit(t *testing.T) {
 	require.Contains(t, out, "Terraform has been successfully initialized!")
 }
 
-func TestTerragruntInitWithInvalidConfig(t *testing.T) {
+func TestTgInitWithInvalidConfig(t *testing.T) {
 	t.Parallel()
-	// Test error handling when terragrunt.hcl has invalid HCL syntax
-	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terragrunt/terragrunt-stack-init-error", t.Name())
+	// Test error handling when tg.hcl has invalid HCL syntax
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init-error", t.Name())
 	require.NoError(t, err)
 
-	// This should fail due to invalid HCL syntax in terragrunt.hcl
-	_, err = TgStackInitE(t, &Options{
+	// This should fail due to invalid HCL syntax in tg.hcl
+	_, err = TgInitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag
