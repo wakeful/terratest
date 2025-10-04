@@ -172,3 +172,19 @@ func GetPodLogs(t testing.TestingT, options *KubectlOptions, pod *corev1.Pod, co
 	require.NoError(t, err)
 	return logs
 }
+
+func ExecPod(t testing.TestingT, options *KubectlOptions, podName string, containerName string, command ...string) string {
+	o, err := ExecPodE(t, options, podName, containerName, command...)
+	require.NoError(t, err)
+	return o
+}
+
+func ExecPodE(t testing.TestingT, options *KubectlOptions, podName string, containerName string, command ...string) (string, error) {
+	var args []string
+	if containerName == "" {
+		args = append([]string{"exec", podName, "--"}, command...)
+	} else {
+		args = append([]string{"exec", podName, fmt.Sprintf("-c%s", containerName), "--"}, command...)
+	}
+	return RunKubectlAndGetOutputE(t, options, args...)
+}
