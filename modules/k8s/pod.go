@@ -173,12 +173,16 @@ func GetPodLogs(t testing.TestingT, options *KubectlOptions, pod *corev1.Pod, co
 	return logs
 }
 
+// ExecPod executes a command in a container within a Kubernetes pod and returns the output. This will fail the test if
+// there is an error. Set containerName to "" if there is only one container in the pod.
 func ExecPod(t testing.TestingT, options *KubectlOptions, podName string, containerName string, command ...string) string {
 	o, err := ExecPodE(t, options, podName, containerName, command...)
 	require.NoError(t, err)
 	return o
 }
 
+// ExecPodE executes a command in a container within a Kubernetes pod and returns the output. Set containerName to "" if
+// there is only one container in the pod.
 func ExecPodE(t testing.TestingT, options *KubectlOptions, podName string, containerName string, command ...string) (string, error) {
 	var args []string
 	if containerName == "" {
