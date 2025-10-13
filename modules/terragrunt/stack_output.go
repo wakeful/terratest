@@ -9,6 +9,7 @@ import (
 )
 
 // TgOutput calls tg stack output for the given variable and returns its value as a string
+// DEPRECATED: The 'stack' commands are deprecated in Terragrunt. Consider using terraform.Output() on individual modules instead.
 func TgOutput(t testing.TestingT, options *Options, key string) string {
 	out, err := TgOutputE(t, options, key)
 	if err != nil {
@@ -18,6 +19,7 @@ func TgOutput(t testing.TestingT, options *Options, key string) string {
 }
 
 // TgOutputE calls tg stack output for the given variable and returns its value as a string
+// DEPRECATED: The 'stack' commands are deprecated in Terragrunt. Consider using terraform.OutputE() on individual modules instead.
 func TgOutputE(t testing.TestingT, options *Options, key string) (string, error) {
 	// Prepare options with no-color flag for parsing
 	optsCopy := *options
@@ -45,6 +47,7 @@ func TgOutputE(t testing.TestingT, options *Options, key string) (string, error)
 
 // TgOutputJson calls tg stack output for the given variable and returns the result as the json string.
 // If key is an empty string, it will return all the output variables.
+// DEPRECATED: The 'stack' commands are deprecated in Terragrunt. Consider using terraform.OutputJson() on individual modules instead.
 func TgOutputJson(t testing.TestingT, options *Options, key string) string {
 	str, err := TgOutputJsonE(t, options, key)
 	if err != nil {
@@ -56,6 +59,7 @@ func TgOutputJson(t testing.TestingT, options *Options, key string) string {
 // TgOutputJsonE calls tg stack output for the given variable and returns the
 // result as the json string.
 // If key is an empty string, it will return all the output variables.
+// DEPRECATED: The 'stack' commands are deprecated in Terragrunt. Consider using terraform.OutputJsonE() on individual modules instead.
 func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
 	// Prepare options with no-color and json flags
 	optsCopy := *options
