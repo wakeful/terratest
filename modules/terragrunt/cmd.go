@@ -130,8 +130,8 @@ const defaultSuccessExitCode = 0
 // defaultErrorExitCode is the exit code returned when terraform command fails
 const defaultErrorExitCode = 1
 
-// getExitCodeForTerraformCommandE runs terraform with the given arguments and options and returns exit code
-func getExitCodeForTerraformCommandE(t testing.TestingT, additionalOptions *Options, additionalArgs ...string) (int, error) {
+// getExitCodeForTerragruntCommandE runs terragrunt with the given arguments and options and returns exit code
+func getExitCodeForTerragruntCommandE(t testing.TestingT, additionalOptions *Options, additionalArgs ...string) (int, error) {
 	options, args := GetCommonOptions(additionalOptions, additionalArgs...)
 
 	additionalOptions.Logger.Logf(t, "Running terragrunt with args %v", args)

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApplyAllTgError(t *testing.T) {
+func TestApplyAllNoError(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())

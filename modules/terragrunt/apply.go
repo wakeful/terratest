@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// ApplyAll runs terragrunt apply with the given options and return stdout/stderr. Note that this method does NOT call destroy and
+// ApplyAll runs terragrunt run-all apply with the given options and returns stdout/stderr. Note that this method does NOT call destroy and
 // assumes the caller is responsible for cleaning up any resources created by running apply.
 func ApplyAll(t testing.TestingT, options *Options) string {
 	out, err := ApplyAllE(t, options)
@@ -13,7 +13,7 @@ func ApplyAll(t testing.TestingT, options *Options) string {
 	return out
 }
 
-// ApplyAllE runs terragrunt apply-all with the given options and return stdout/stderr. Note that this method does NOT call destroy and
+// ApplyAllE runs terragrunt run-all apply with the given options and returns stdout/stderr. Note that this method does NOT call destroy and
 // assumes the caller is responsible for cleaning up any resources created by running apply.
 func ApplyAllE(t testing.TestingT, options *Options) (string, error) {
 	return runTerragruntCommandE(t, options, "run-all", "apply", "-input=false", "-auto-approve")
