@@ -136,6 +136,9 @@ spec:
   containers:
   - name: nginx
     image: nginx:1.15.7
+    env:
+        - name: NAME
+          value: "nginx"
     ports:
     - containerPort: 80
 `
@@ -143,6 +146,9 @@ spec:
 const EXAMPLE_POD_WITH_MULTIPLE_CONTAINERS_YAML_TEMPLATE = EXAMPLE_POD_YAML_TEMPLATE + `
   - name: nginx-two
     image: nginx:1.15.7
+    env:
+        - name: NAME
+          value: "nginx-two"
     ports:
     - containerPort: 80
 `
@@ -211,4 +217,29 @@ func TestIsPodAvailable(t *testing.T) {
 			require.Equal(t, tc.expectedResult, actualResult)
 		})
 	}
+}
+
+func TestExecPod(t *testing.T) {
+	t.Parallel()
+
+	uniqueID := strings.ToLower(random.UniqueId())
+	options := NewKubectlOptions("", "", uniqueID)
+	configData := fmt.Sprintf(EXAMPLE_POD_WITH_MULTIPLE_CONTAINERS_YAML_TEMPLATE, uniqueID, uniqueID)
+	defer KubectlDeleteFromString(t, options, configData)
+	KubectlApplyFromString(t, options, configData)
+
+	WaitUntilPodAvailable(t, options, "nginx-pod", 60, 1*time.Second)
+
+	t.Run("TestExecPodWithoutContainer", func(t *testing.T) {
+		stdout, err := ExecPodE(t, options, "nginx-pod", "", "env")
+		require.NoError(t, err)
+		require.Contains(t, stdout, "NAME=nginx\n")
+	})
+
+	t.Run("TestExecPodWithContainer", func(t *testing.T) {
+		stdout, err := ExecPodE(t, options, "nginx-pod", "nginx-two", "env")
+		require.NoError(t, err)
+		require.Contains(t, stdout, "NAME=nginx-two\n")
+	})
+
 }
