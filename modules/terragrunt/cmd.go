@@ -124,6 +124,29 @@ func validateOptions(opts *Options) error {
 	return nil
 }
 
+// defaultSuccessExitCode is the exit code returned when terraform command succeeds
+const defaultSuccessExitCode = 0
+
+// defaultErrorExitCode is the exit code returned when terraform command fails
+const defaultErrorExitCode = 1
+
+// getExitCodeForTerragruntCommandE runs terragrunt with the given arguments and options and returns exit code
+func getExitCodeForTerragruntCommandE(t testing.TestingT, additionalOptions *Options, additionalArgs ...string) (int, error) {
+	options, args := GetCommonOptions(additionalOptions, additionalArgs...)
+
+	additionalOptions.Logger.Logf(t, "Running terragrunt with args %v", args)
+	cmd := generateCommand(options, args...)
+	_, err := shell.RunCommandAndGetOutputE(t, cmd)
+	if err == nil {
+		return defaultSuccessExitCode, nil
+	}
+	exitCode, getExitCodeErr := shell.GetExitCodeForRunCommandError(err)
+	if getExitCodeErr == nil {
+		return exitCode, nil
+	}
+	return defaultErrorExitCode, getExitCodeErr
+}
+
 // generateCommand creates a shell.Command with the specified tg options and arguments
 // This function encapsulates the command creation logic for consistency
 func generateCommand(terragruntOptions *Options, commandArgs ...string) shell.Command {
