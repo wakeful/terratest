@@ -281,11 +281,12 @@ func OutputJson(t testing.TestingT, options *Options, key string) string {
 // If key is an empty string, it will return all the output variables.
 func OutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
 	args := []string{"output", "-no-color", "-json"}
+	args = append(args, options.ExtraArgs.Output...)
 	if key != "" {
 		args = append(args, key)
 	}
 
-	rawJson, err := RunTerraformCommandAndGetStdoutE(t, options, prepend(options.ExtraArgs.Output, args...)...)
+	rawJson, err := RunTerraformCommandAndGetStdoutE(t, options, args...)
 	if err != nil {
 		return rawJson, err
 	}
