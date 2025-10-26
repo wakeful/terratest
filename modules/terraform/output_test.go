@@ -393,6 +393,10 @@ func TestOutputStruct(t *testing.T) {
 
 	options := &Options{
 		TerraformDir: testFolder,
+		// Let's test order or ExtraArgs while we are at it
+		ExtraArgs: ExtraArgs{
+			Output: []string{"-state=terraform.tfstate"},
+		},
 	}
 
 	InitAndApply(t, options)
