@@ -3,7 +3,7 @@ module github.com/gruntwork-io/terratest/modules/terraform
 go 1.25.0
 
 require (
-	github.com/gruntwork-io/terratest v0.0.0-00010101000000-000000000000
+	github.com/gruntwork-io/terratest v0.46.16
 	github.com/gruntwork-io/terratest/modules/files v0.0.0
 	github.com/gruntwork-io/terratest/modules/logger v0.0.0
 	github.com/gruntwork-io/terratest/modules/retry v0.0.0
@@ -28,7 +28,7 @@ require (
 	github.com/hashicorp/go-getter/v2 v2.2.3 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
-	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/mattn/go-zglob v0.0.6 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
