@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	github.com/gruntwork-io/terratest v0.46.16
 	github.com/gruntwork-io/terratest/modules/files v0.0.0
+	github.com/gruntwork-io/terratest/modules/formatting v0.0.0
 	github.com/gruntwork-io/terratest/modules/logger v0.0.0
 	github.com/gruntwork-io/terratest/modules/retry v0.0.0
 	github.com/gruntwork-io/terratest/modules/shell v0.0.0
@@ -48,6 +49,7 @@ require (
 replace (
 	github.com/gruntwork-io/terratest => ../..
 	github.com/gruntwork-io/terratest/modules/files => ../files
+	github.com/gruntwork-io/terratest/modules/formatting => ../formatting
 	github.com/gruntwork-io/terratest/modules/logger => ../logger
 	github.com/gruntwork-io/terratest/modules/retry => ../retry
 	github.com/gruntwork-io/terratest/modules/shell => ../shell

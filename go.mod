@@ -164,6 +164,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.0 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
+	github.com/gruntwork-io/terratest/modules/formatting v0.0.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
@@ -243,6 +244,7 @@ require (
 
 replace (
 	github.com/gruntwork-io/terratest/modules/files => ./modules/files
+	github.com/gruntwork-io/terratest/modules/formatting => ./modules/formatting
 	github.com/gruntwork-io/terratest/modules/logger => ./modules/logger
 	github.com/gruntwork-io/terratest/modules/retry => ./modules/retry
 	github.com/gruntwork-io/terratest/modules/shell => ./modules/shell

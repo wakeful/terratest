@@ -5,8 +5,8 @@ go 1.25.0
 require (
 	github.com/gruntwork-io/go-commons v0.17.2
 	github.com/gruntwork-io/terratest v0.46.16
-	github.com/gruntwork-io/terratest/modules/files v0.0.0-00010101000000-000000000000
-	github.com/gruntwork-io/terratest/modules/shell v0.0.0-00010101000000-000000000000
+	github.com/gruntwork-io/terratest/modules/files v0.0.0
+	github.com/gruntwork-io/terratest/modules/shell v0.0.0
 	github.com/gruntwork-io/terratest/modules/testing v0.0.0
 	github.com/jstemmer/go-junit-report v1.0.0
 	github.com/sirupsen/logrus v1.9.3

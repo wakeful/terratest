@@ -1,4 +1,4 @@
-package terragrunt
+package formatting
 
 import (
 	"fmt"
@@ -20,15 +20,15 @@ func FormatPluginDirAsArgs(pluginDir string) []string {
 // FormatBackendConfigAsArgs formats the given variables as backend config args for Terraform (e.g. of the
 // format -backend-config=key=value).
 func FormatBackendConfigAsArgs(vars map[string]interface{}) []string {
-	return formatTerraformArgs(vars, "-backend-config", false, true)
+	return FormatTerraformArgs(vars, "-backend-config", false, true)
 }
 
-// Format the given vars into 'Terraform' format, with each var being prefixed with the given prefix. If
+// FormatTerraformArgs formats the given vars into 'Terraform' format, with each var being prefixed with the given prefix. If
 // useSpaceAsSeparator is true, a space will separate the prefix and each var (e.g., -var foo=bar). If
 // useSpaceAsSeparator is false, an equals will separate the prefix and each var (e.g., -backend-config=foo=bar). If
 // omitNil is false, then nil values will be included, (e.g. -backend-config=foo=null). If
 // omitNil is true, then nil values will not be included, (e.g. -backend-config=foo). If
-func formatTerraformArgs(vars map[string]interface{}, prefix string, useSpaceAsSeparator bool, omitNil bool) []string {
+func FormatTerraformArgs(vars map[string]interface{}, prefix string, useSpaceAsSeparator bool, omitNil bool) []string {
 	var args []string
 
 	for key, value := range vars {
