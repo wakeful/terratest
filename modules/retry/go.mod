@@ -3,7 +3,7 @@ module github.com/gruntwork-io/terratest/modules/retry
 go 1.25.0
 
 require (
-	github.com/gruntwork-io/terratest/modules/logger v0.0.0
+	github.com/gruntwork-io/terratest/modules/logger v0.0.0-00010101000000-000000000000
 	github.com/gruntwork-io/terratest/modules/testing v0.0.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.46.0

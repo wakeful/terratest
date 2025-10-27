@@ -3,7 +3,7 @@ module github.com/gruntwork-io/terratest/modules/logger
 go 1.25.0
 
 require (
-	github.com/gruntwork-io/go-commons v0.17.2
+	github.com/gruntwork-io/go-commons v0.8.0
 	github.com/gruntwork-io/terratest v0.46.16
 	github.com/gruntwork-io/terratest/modules/files v0.0.0
 	github.com/gruntwork-io/terratest/modules/shell v0.0.0
@@ -21,8 +21,7 @@ require (
 	github.com/mattn/go-zglob v0.0.6 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/urfave/cli/v2 v2.10.3 // indirect
-	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	github.com/urfave/cli v1.22.16 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
