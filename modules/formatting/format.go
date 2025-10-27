@@ -17,17 +17,18 @@ func FormatPluginDirAsArgs(pluginDir string) []string {
 	return pluginArgs
 }
 
-// FormatBackendConfigAsArgs formats the given variables as backend config args for Terraform (e.g. of the
-// format -backend-config=key=value).
+// FormatBackendConfigAsArgs formats the given variables as backend config args (e.g. of the
+// format -backend-config=key=value). Used by both Terraform and Terragrunt.
 func FormatBackendConfigAsArgs(vars map[string]interface{}) []string {
 	return FormatTerraformArgs(vars, "-backend-config", false, true)
 }
 
-// FormatTerraformArgs formats the given vars into 'Terraform' format, with each var being prefixed with the given prefix. If
-// useSpaceAsSeparator is true, a space will separate the prefix and each var (e.g., -var foo=bar). If
-// useSpaceAsSeparator is false, an equals will separate the prefix and each var (e.g., -backend-config=foo=bar). If
-// omitNil is false, then nil values will be included, (e.g. -backend-config=foo=null). If
-// omitNil is true, then nil values will not be included, (e.g. -backend-config=foo). If
+// FormatTerraformArgs formats the given vars into HCL command-line argument format, with each var being
+// prefixed with the given prefix. This is used by both Terraform and Terragrunt commands.
+// If useSpaceAsSeparator is true, a space will separate the prefix and each var (e.g., -var foo=bar).
+// If useSpaceAsSeparator is false, an equals will separate the prefix and each var (e.g., -backend-config=foo=bar).
+// If omitNil is false, then nil values will be included as "null" (e.g. -backend-config=foo=null).
+// If omitNil is true, then nil values will be formatted without the value (e.g. -backend-config=foo).
 func FormatTerraformArgs(vars map[string]interface{}, prefix string, useSpaceAsSeparator bool, omitNil bool) []string {
 	var args []string
 
@@ -49,11 +50,11 @@ func FormatTerraformArgs(vars map[string]interface{}, prefix string, useSpaceAsS
 	return args
 }
 
-// Terraform allows you to pass in command-line variables using HCL syntax (e.g. -var foo=[1,2,3]). Unfortunately,
-// while their golang hcl library can convert an HCL string to a Go type, they don't seem to offer a library to convert
-// arbitrary Go types to an HCL string. Therefore, this method is a simple implementation that correctly handles
-// ints, booleans, lists, and maps. Everything else is forced into a string using Sprintf. Hopefully, this approach is
-// good enough for the type of variables we deal with in Terratest.
+// toHclString converts Go types to HCL syntax strings (e.g. []int{1,2,3} becomes "[1, 2, 3]").
+// Terraform and Terragrunt accept command-line variables using HCL syntax (e.g. -var foo=[1,2,3]).
+// Unfortunately, while the HCL library can parse HCL strings to Go types, it doesn't offer a way to
+// convert arbitrary Go types back to HCL strings. This is a simple implementation that correctly
+// handles ints, booleans, lists, and maps. Everything else is formatted as a string using Sprintf.
 func toHclString(value interface{}, isNested bool) string {
 	// Ideally, we'd use a type switch here to identify slices and maps, but we can't do that, because Go doesn't
 	// support generics, and the type switch only matches concrete types. So we could match []interface{}, but if
