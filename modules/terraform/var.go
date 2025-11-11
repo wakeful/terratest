@@ -1,7 +1,5 @@
 package terraform
 
-import "github.com/gruntwork-io/terratest/modules/formatting"
-
 type Var interface {
 	Args() []string
 	internal()
@@ -18,7 +16,7 @@ type varInline struct {
 
 func (vi varInline) Args() []string {
 	m := map[string]interface{}{vi.name: vi.value}
-	return formatting.FormatTerraformArgs(m, "-var", true, false)
+	return formatTerraformArgs(m, "-var", true, false)
 }
 func (vi varInline) internal() {}
 
