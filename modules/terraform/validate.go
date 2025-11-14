@@ -56,7 +56,7 @@ func InitAndValidateE(t testing.TestingT, options *Options) (string, error) {
 	return ValidateE(t, options)
 }
 
-// InitAndValidateInputsE runs terragrunt init and validate with the given options and rerutns stdout/stderr
+// InitAndValidateInputsE runs terragrunt init and validate with the given options and returns stdout/stderr
 func InitAndValidateInputsE(t testing.TestingT, options *Options) (string, error) {
 	if _, err := InitE(t, options); err != nil {
 		return "", err
