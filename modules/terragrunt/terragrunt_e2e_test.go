@@ -1,0 +1,99 @@
+package terragrunt
+
+import (
+	"path/filepath"
+	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/files"
+	"github.com/stretchr/testify/require"
+)
+
+// TestTerragruntEndToEndIntegration is a comprehensive integration test that validates
+// the complete terragrunt workflow with TerragruntArgs and TerraformArgs.
+// This test exercises the fix for issue #1609 where args were being ignored.
+func TestTerragruntEndToEndIntegration(t *testing.T) {
+	t.Parallel()
+
+	// Setup: Copy test fixture to temp directory
+	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-multi-plan", t.Name())
+	require.NoError(t, err)
+
+	// Configure options with TerragruntArgs
+	options := &Options{
+		TerragruntDir: testFolder,
+		// TerragruntArgs: Global terragrunt flags that should be respected
+		TerragruntArgs: []string{"--log-level", "error"},
+	}
+
+	// Step 1: Plan with exit code (original bug scenario from issue #1609)
+	// This is the exact scenario from the bug report
+	t.Log("Step 1: Testing PlanAllExitCode with TerragruntArgs (original bug scenario)")
+	exitCode, err := PlanAllExitCodeE(t, options)
+	require.NoError(t, err)
+	// Should show changes (exit code 2) since nothing has been applied yet
+	require.Equal(t, 2, exitCode, "Plan should detect changes")
+
+	// Step 2: Apply all modules
+	t.Log("Step 2: Testing ApplyAll with TerragruntArgs")
+	applyOutput := ApplyAll(t, options)
+	require.NotEmpty(t, applyOutput)
+	// Verify TerragruntArgs: should not see info-level logs
+	require.NotContains(t, applyOutput, "level=info", "TerragruntArgs should suppress info logs")
+
+	// Step 3: Plan again - should show no changes (exit code 0)
+	t.Log("Step 3: Verifying infrastructure is up-to-date")
+	exitCode, err = PlanAllExitCodeE(t, options)
+	require.NoError(t, err)
+	require.Equal(t, 0, exitCode, "Plan should show no changes after apply")
+
+	// Step 4: Clean up - Destroy all
+	t.Log("Step 4: Testing DestroyAll with TerragruntArgs")
+	destroyOutput := DestroyAll(t, options)
+	require.NotEmpty(t, destroyOutput)
+	// Verify TerragruntArgs: should not see info-level logs
+	require.NotContains(t, destroyOutput, "level=info", "TerragruntArgs should suppress info logs")
+
+	t.Log("Integration test completed successfully - all args were properly passed")
+}
+
+// TestStackEndToEndIntegration tests the complete stack workflow with args
+func TestStackEndToEndIntegration(t *testing.T) {
+	t.Parallel()
+
+	// Setup: Copy stack test fixture
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir:  filepath.Join(testFolder, "live"),
+		TerragruntArgs: []string{"--log-level", "error"},
+	}
+
+	// Step 1: Initialize stack
+	t.Log("Step 1: Initializing stack with TerragruntArgs")
+	output, err := TgInitE(t, options)
+	require.NoError(t, err)
+	require.NotContains(t, output, "level=info", "TerragruntArgs should suppress info logs")
+
+	// Step 2: Generate stack
+	t.Log("Step 2: Generating stack with TerragruntArgs")
+	genOutput, err := TgStackGenerateE(t, options)
+	require.NoError(t, err)
+	require.NotContains(t, genOutput, "level=info", "TerragruntArgs should suppress info logs")
+
+	// Step 3: Run stack plan
+	t.Log("Step 3: Running stack plan with TerraformArgs")
+	runOptions := *options
+	runOptions.TerraformArgs = []string{"plan"}
+	planOutput, err := TgStackRunE(t, &runOptions)
+	require.NoError(t, err)
+	require.Contains(t, planOutput, "Terraform will perform", "Stack run should execute plan")
+
+	// Step 4: Clean stack
+	t.Log("Step 4: Cleaning stack")
+	_, err = TgStackCleanE(t, options)
+	require.NoError(t, err)
+
+	t.Log("Stack integration test completed successfully")
+}

@@ -123,3 +123,144 @@ func TestCombinedArgsOrdering(t *testing.T) {
 	require.NotContains(t, output, "Initializing the backend",
 		"With -backend=false, should not see backend initialization")
 }
+
+// TestValidateOptions verifies that validateOptions properly catches invalid configurations
+func TestValidateOptions(t *testing.T) {
+	t.Parallel()
+
+	// Test nil options
+	err := validateOptions(nil)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "options cannot be nil")
+
+	// Test missing TerragruntDir
+	err = validateOptions(&Options{})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "TerragruntDir is required")
+
+	// Test valid options
+	err = validateOptions(&Options{
+		TerragruntDir: "/some/path",
+	})
+	require.NoError(t, err)
+}
+
+// TestBuildTerragruntArgs verifies the argument construction logic
+func TestBuildTerragruntArgs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		opts         *Options
+		commandArgs  []string
+		expectedArgs []string
+		description  string
+	}{
+		{
+			name:         "empty args",
+			opts:         &Options{},
+			commandArgs:  []string{"init"},
+			expectedArgs: []string{"--non-interactive", "init"},
+			description:  "Should add --non-interactive even with no custom args",
+		},
+		{
+			name: "only terragrunt args",
+			opts: &Options{
+				TerragruntArgs: []string{"--log-level", "error"},
+			},
+			commandArgs:  []string{"init"},
+			expectedArgs: []string{"--log-level", "error", "--non-interactive", "init"},
+			description:  "Should place TerragruntArgs before --non-interactive",
+		},
+		{
+			name: "only terraform args",
+			opts: &Options{
+				TerraformArgs: []string{"-upgrade"},
+			},
+			commandArgs:  []string{"init"},
+			expectedArgs: []string{"--non-interactive", "init", "-upgrade"},
+			description:  "Should place TerraformArgs after command",
+		},
+		{
+			name: "both arg types",
+			opts: &Options{
+				TerragruntArgs: []string{"--log-level", "error", "--no-color"},
+				TerraformArgs:  []string{"-upgrade", "-backend=false"},
+			},
+			commandArgs:  []string{"init"},
+			expectedArgs: []string{"--log-level", "error", "--no-color", "--non-interactive", "init", "-upgrade", "-backend=false"},
+			description:  "Should maintain correct order: TerragruntArgs → --non-interactive → command → TerraformArgs",
+		},
+		{
+			name: "stack command with args",
+			opts: &Options{
+				TerragruntArgs: []string{"--log-level", "error"},
+				TerraformArgs:  []string{"plan"},
+			},
+			commandArgs:  []string{"stack", "run"},
+			expectedArgs: []string{"--log-level", "error", "--non-interactive", "stack", "run", "plan"},
+			description:  "Should work with multi-part commands like 'stack run'",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt // capture range variable
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			actualArgs := buildTerragruntArgs(tt.opts, tt.commandArgs...)
+			require.Equal(t, tt.expectedArgs, actualArgs, tt.description)
+		})
+	}
+}
+
+// TestPrepareOptions verifies default value setting behavior
+func TestPrepareOptions(t *testing.T) {
+	t.Parallel()
+
+	// Test that default binary is set
+	opts := &Options{
+		TerragruntDir: "/some/path",
+	}
+	err := prepareOptions(opts)
+	require.NoError(t, err)
+	require.Equal(t, DefaultTerragruntBinary, opts.TerragruntBinary)
+
+	// Test that custom binary is preserved
+	opts = &Options{
+		TerragruntDir:    "/some/path",
+		TerragruntBinary: "custom-terragrunt",
+	}
+	err = prepareOptions(opts)
+	require.NoError(t, err)
+	require.Equal(t, "custom-terragrunt", opts.TerragruntBinary)
+
+	// Test that validation errors propagate
+	err = prepareOptions(&Options{})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "TerragruntDir is required")
+}
+
+// TestEnvVarsPropagation verifies environment variables are passed through
+func TestEnvVarsPropagation(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir: filepath.Join(testFolder, "live"),
+		EnvVars: map[string]string{
+			"TERRAGRUNT_TFPATH": "terraform", // Explicitly set terraform binary
+			"TG_LOG_LEVEL":      "error",     // Alternative to --log-level flag
+		},
+	}
+
+	// Run init - should succeed with env vars set
+	output, err := TgInitE(t, options)
+	require.NoError(t, err)
+	require.NotEmpty(t, output)
+	// With TG_LOG_LEVEL=error, should not see info logs
+	require.NotContains(t, output, "level=info")
+}
