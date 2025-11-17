@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gruntwork-io/terratest/internal/lib/formatting"
 	"github.com/gruntwork-io/terratest/modules/collections"
 )
 
@@ -121,11 +122,7 @@ func FormatTerraformLockAsArgs(lockCheck bool, lockTimeout string) []string {
 // FormatTerraformPluginDirAsArgs formats the plugin-dir variable
 // -plugin-dir
 func FormatTerraformPluginDirAsArgs(pluginDir string) []string {
-	pluginArgs := []string{fmt.Sprintf("-plugin-dir=%v", pluginDir)}
-	if pluginDir == "" {
-		return nil
-	}
-	return pluginArgs
+	return formatting.FormatPluginDirAsArgs(pluginDir)
 }
 
 // FormatTerraformArgs will format multiple args with the arg name (e.g. "-var-file", []string{"foo.tfvars", "bar.tfvars", "baz.tfvars.json"})
@@ -141,7 +138,7 @@ func FormatTerraformArgs(argName string, args []string) []string {
 // FormatTerraformBackendConfigAsArgs formats the given variables as backend config args for Terraform (e.g. of the
 // format -backend-config=key=value).
 func FormatTerraformBackendConfigAsArgs(vars map[string]interface{}) []string {
-	return formatTerraformArgs(vars, "-backend-config", false, true)
+	return formatting.FormatBackendConfigAsArgs(vars)
 }
 
 // Format the given vars into 'Terraform' format, with each var being prefixed with the given prefix. If
