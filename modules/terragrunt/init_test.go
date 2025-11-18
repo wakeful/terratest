@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTgInit(t *testing.T) {
+func TestInit(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerraformFolderToTemp(
 		"../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
 	require.NoError(t, err)
 
-	out, err := TgInitE(t, &Options{
+	out, err := InitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag
@@ -24,7 +24,7 @@ func TestTgInit(t *testing.T) {
 	require.Contains(t, out, "Terraform has been successfully initialized!")
 }
 
-func TestTgInitWithInvalidConfig(t *testing.T) {
+func TestInitWithInvalidConfig(t *testing.T) {
 	t.Parallel()
 	// Test error handling when tg.hcl has invalid HCL syntax
 	testFolder, err := files.CopyTerraformFolderToTemp(
@@ -32,7 +32,7 @@ func TestTgInitWithInvalidConfig(t *testing.T) {
 	require.NoError(t, err)
 
 	// This should fail due to invalid HCL syntax in tg.hcl
-	_, err = TgInitE(t, &Options{
+	_, err = InitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag
@@ -42,8 +42,8 @@ func TestTgInitWithInvalidConfig(t *testing.T) {
 	require.Contains(t, err.Error(), "Missing expression")
 }
 
-// TestTgInitWithBothArgTypes verifies init works with both TerragruntArgs and TerraformArgs
-func TestTgInitWithBothArgTypes(t *testing.T) {
+// TestInitWithBothArgTypes verifies init works with both TerragruntArgs and TerraformArgs
+func TestInitWithBothArgTypes(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerraformFolderToTemp(
@@ -57,7 +57,7 @@ func TestTgInitWithBothArgTypes(t *testing.T) {
 		TerraformArgs:    []string{"-upgrade"},
 	}
 
-	output, err := TgInitE(t, options)
+	output, err := InitE(t, options)
 	require.NoError(t, err)
 	// Verify TerragruntArgs: no info logs
 	require.NotContains(t, output, "level=info")

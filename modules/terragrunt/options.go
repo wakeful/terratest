@@ -17,7 +17,7 @@ import (
 // Example:
 //
 //	// For init with terraform flags
-//	TgInitE(t, &Options{
+//	InitE(t, &Options{
 //	    TerragruntDir: "/path/to/config",
 //	    TerragruntArgs: []string{"--log-level", "info"},
 //	    TerraformArgs: []string{"-upgrade=true"},

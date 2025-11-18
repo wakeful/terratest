@@ -72,13 +72,13 @@ func TestStackEndToEndIntegration(t *testing.T) {
 
 	// Step 1: Initialize stack
 	t.Log("Step 1: Initializing stack with TerragruntArgs")
-	output, err := TgInitE(t, options)
+	output, err := InitE(t, options)
 	require.NoError(t, err)
 	require.NotContains(t, output, "level=info", "TerragruntArgs should suppress info logs")
 
 	// Step 2: Generate stack
 	t.Log("Step 2: Generating stack with TerragruntArgs")
-	genOutput, err := TgStackGenerateE(t, options)
+	genOutput, err := StackGenerateE(t, options)
 	require.NoError(t, err)
 	require.NotContains(t, genOutput, "level=info", "TerragruntArgs should suppress info logs")
 
@@ -86,13 +86,13 @@ func TestStackEndToEndIntegration(t *testing.T) {
 	t.Log("Step 3: Running stack plan with TerraformArgs")
 	runOptions := *options
 	runOptions.TerraformArgs = []string{"plan"}
-	planOutput, err := TgStackRunE(t, &runOptions)
+	planOutput, err := StackRunE(t, &runOptions)
 	require.NoError(t, err)
 	require.Contains(t, planOutput, "Terraform will perform", "Stack run should execute plan")
 
 	// Step 4: Clean stack
 	t.Log("Step 4: Cleaning stack")
-	_, err = TgStackCleanE(t, options)
+	_, err = StackCleanE(t, options)
 	require.NoError(t, err)
 
 	t.Log("Stack integration test completed successfully")
