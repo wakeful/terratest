@@ -88,19 +88,17 @@ Work with standard terragrunt configurations (dependencies via `dependency` bloc
 - `ApplyAll(t, options)` - Apply all modules with dependencies
 - `DestroyAll(t, options)` - Destroy all modules with dependencies
 - `PlanAllExitCode(t, options)` - Plan all and return exit code (0=no changes, 2=changes)
-- `TgInit(t, options)` - Initialize configuration
+- `Init(t, options)` - Initialize configuration
 
 ### Stack Commands
 Work with `terragrunt.stack.hcl` configurations:
 
-- `TgStackGenerate(t, options)` - Generate stack from stack.hcl
-- `TgStackRun(t, options)` - Run command on generated stack
-- `TgStackClean(t, options)` - Remove .terragrunt-stack directory
-- `TgOutput(t, options, key)` - Get stack output value
-- `TgOutputJson(t, options, key)` - Get stack output as JSON
-- `TgOutputAll(t, options)` - Get all stack outputs as map
-
-> **Note**: Function naming is inconsistent - run-all commands lack the `Tg` prefix while stack commands have it. This is for historical reasons.
+- `StackGenerate(t, options)` - Generate stack from stack.hcl
+- `StackRun(t, options)` - Run command on generated stack
+- `StackClean(t, options)` - Remove .terragrunt-stack directory
+- `Output(t, options, key)` - Get stack output value
+- `OutputJson(t, options, key)` - Get stack output as JSON
+- `OutputAll(t, options)` - Get all stack outputs as map
 
 ## Examples
 
@@ -135,7 +133,7 @@ func TestWithCustomArgs(t *testing.T) {
         TerraformArgs:  []string{"-upgrade"},
     }
 
-    terragrunt.TgInit(t, options)
+    terragrunt.Init(t, options)
 }
 ```
 
@@ -153,11 +151,11 @@ func TestStackOutput(t *testing.T) {
     defer terragrunt.DestroyAll(t, options)
 
     // Get specific output
-    vpcID := terragrunt.TgOutput(t, options, "vpc_id")
+    vpcID := terragrunt.Output(t, options, "vpc_id")
     assert.NotEmpty(t, vpcID)
 
     // Get all outputs
-    outputs := terragrunt.TgOutputAll(t, options)
+    outputs := terragrunt.OutputAll(t, options)
     assert.Contains(t, outputs, "vpc_id")
 }
 ```

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTgStackGenerate(t *testing.T) {
+func TestStackGenerate(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerraformFolderToTemp(
@@ -17,7 +17,7 @@ func TestTgStackGenerate(t *testing.T) {
 	require.NoError(t, err)
 
 	// First initialize the stack
-	_, err = TgInitE(t, &Options{
+	_, err = InitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},
@@ -25,7 +25,7 @@ func TestTgStackGenerate(t *testing.T) {
 	require.NoError(t, err)
 
 	// Then generate the stack
-	out, err := TgStackGenerateE(t, &Options{
+	out, err := StackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 	})
@@ -47,7 +47,7 @@ func TestTgStackGenerate(t *testing.T) {
 	}
 }
 
-func TestTgStackGenerateWithNoColor(t *testing.T) {
+func TestStackGenerateWithNoColor(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerraformFolderToTemp(
@@ -55,7 +55,7 @@ func TestTgStackGenerateWithNoColor(t *testing.T) {
 	require.NoError(t, err)
 
 	// First initialize the stack
-	_, err = TgInitE(t, &Options{
+	_, err = InitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},
@@ -63,7 +63,7 @@ func TestTgStackGenerateWithNoColor(t *testing.T) {
 	require.NoError(t, err)
 
 	// Generate with no-color option
-	out, err := TgStackGenerateE(t, &Options{
+	out, err := StackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerragruntArgs:   []string{"--no-color"},
@@ -79,7 +79,7 @@ func TestTgStackGenerateWithNoColor(t *testing.T) {
 	require.DirExists(t, stackDir)
 }
 
-func TestTgStackGenerateWithExtraArgs(t *testing.T) {
+func TestStackGenerateWithExtraArgs(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerraformFolderToTemp(
@@ -87,7 +87,7 @@ func TestTgStackGenerateWithExtraArgs(t *testing.T) {
 	require.NoError(t, err)
 
 	// First initialize the stack
-	_, err = TgInitE(t, &Options{
+	_, err = InitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},
@@ -95,7 +95,7 @@ func TestTgStackGenerateWithExtraArgs(t *testing.T) {
 	require.NoError(t, err)
 
 	// Generate with extra args
-	out, err := TgStackGenerateE(t, &Options{
+	out, err := StackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerragruntArgs:   []string{"--log-level", "info"},
@@ -111,11 +111,11 @@ func TestTgStackGenerateWithExtraArgs(t *testing.T) {
 	require.DirExists(t, stackDir)
 }
 
-func TestTgStackGenerateNonExistentDir(t *testing.T) {
+func TestStackGenerateNonExistentDir(t *testing.T) {
 	t.Parallel()
 
 	// Test with non-existent directory
-	_, err := TgStackGenerateE(t, &Options{
+	_, err := StackGenerateE(t, &Options{
 		TerragruntDir:    "/non/existent/path",
 		TerragruntBinary: "terragrunt",
 	})
@@ -136,14 +136,14 @@ func TestStackGenerateWithArgs(t *testing.T) {
 	require.NoError(t, err)
 
 	// Initialize first
-	_, err = TgInitE(t, &Options{
+	_, err = InitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 	})
 	require.NoError(t, err)
 
 	// Generate with TerragruntArgs
-	out, err := TgStackGenerateE(t, &Options{
+	out, err := StackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
 		TerragruntBinary: "terragrunt",
 		TerragruntArgs:   []string{"--log-level", "error"},

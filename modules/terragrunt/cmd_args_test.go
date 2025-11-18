@@ -25,7 +25,7 @@ func TestTerragruntArgsIncluded(t *testing.T) {
 	}
 
 	// Run init - if TerragruntArgs work, we should only see error-level logs
-	output, err := TgInitE(t, options)
+	output, err := InitE(t, options)
 	require.NoError(t, err)
 
 	// With --log-level error, we shouldn't see info-level messages
@@ -51,7 +51,7 @@ func TestTerraformArgsIncluded(t *testing.T) {
 	}
 
 	// Run init with -backend=false flag
-	output, err := TgInitE(t, options)
+	output, err := InitE(t, options)
 	require.NoError(t, err)
 
 	// With -backend=false, we should NOT see backend initialization messages
@@ -112,7 +112,7 @@ func TestCombinedArgsOrdering(t *testing.T) {
 	}
 
 	// Run init - both args should be passed in the correct order
-	output, err := TgInitE(t, options)
+	output, err := InitE(t, options)
 	require.NoError(t, err)
 
 	// Verify TerragruntArgs effect: should not see info-level logs
@@ -258,7 +258,7 @@ func TestEnvVarsPropagation(t *testing.T) {
 	}
 
 	// Run init - should succeed with env vars set
-	output, err := TgInitE(t, options)
+	output, err := InitE(t, options)
 	require.NoError(t, err)
 	require.NotEmpty(t, output)
 	// With TG_LOG_LEVEL=error, should not see info logs
