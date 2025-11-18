@@ -17,6 +17,31 @@ func TestStackClean(t *testing.T) {
 
 	stackDir := path.Join(testFolder, "live", ".terragrunt-stack")
 
+	StackGenerate(t, &Options{
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
+	})
+
+	require.DirExists(t, stackDir)
+
+	out := StackClean(t, &Options{
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
+	})
+
+	require.Contains(t, out, "Deleting stack directory")
+	require.NoDirExists(t, stackDir)
+}
+
+func TestStackCleanE(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	require.NoError(t, err)
+
+	stackDir := path.Join(testFolder, "live", ".terragrunt-stack")
+
 	// First generate the stack to create .terragrunt-stack directory
 	_, err = StackGenerateE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),

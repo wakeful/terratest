@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDestroyAllNoError(t *testing.T) {
+func TestDestroyAll(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
@@ -18,11 +18,29 @@ func TestDestroyAllNoError(t *testing.T) {
 		TerragruntBinary: "terragrunt",
 	}
 
-	out := ApplyAll(t, options)
+	ApplyAll(t, options)
+	destroyOut := DestroyAll(t, options)
+	require.NotEmpty(t, destroyOut)
+}
+
+func TestDestroyAllE(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir:    testFolder,
+		TerragruntBinary: "terragrunt",
+	}
+
+	out, err := ApplyAllE(t, options)
+	require.NoError(t, err)
 	require.Contains(t, out, "Hello, World")
 
 	// Test that destroy completes successfully
-	destroyOut := DestroyAll(t, options)
+	destroyOut, err := DestroyAllE(t, options)
+	require.NoError(t, err)
 	require.NotEmpty(t, destroyOut, "Destroy output should not be empty")
 }
 

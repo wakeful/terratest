@@ -8,7 +8,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTgPlanAllNoError(t *testing.T) {
+func TestPlanAllExitCode(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-multi-plan", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir:    testFolder,
+		TerragruntBinary: "terragrunt",
+	}
+
+	ApplyAll(t, options)
+	exitCode := PlanAllExitCode(t, options)
+	require.Equal(t, 0, exitCode)
+}
+
+func TestPlanAllExitCodeE(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-multi-plan", t.Name())
@@ -34,7 +50,7 @@ func TestTgPlanAllNoError(t *testing.T) {
 	require.Equal(t, 0, getExitCode)
 }
 
-func TestTgPlanAllWithError(t *testing.T) {
+func TestPlanAllWithError(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerragruntFolderToTemp("../../test/fixtures/terragrunt/terragrunt-with-plan-error", t.Name())

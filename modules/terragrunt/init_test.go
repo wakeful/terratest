@@ -15,6 +15,21 @@ func TestInit(t *testing.T) {
 		"../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
 	require.NoError(t, err)
 
+	out := Init(t, &Options{
+		TerragruntDir:    testFolder,
+		TerragruntBinary: "terragrunt",
+		TerraformArgs:    []string{"-upgrade=true"},
+	})
+	require.Contains(t, out, "Terraform has been successfully initialized!")
+}
+
+func TestInitE(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-no-error", t.Name())
+	require.NoError(t, err)
+
 	out, err := InitE(t, &Options{
 		TerragruntDir:    testFolder,
 		TerragruntBinary: "terragrunt",

@@ -86,6 +86,54 @@ func OutputJsonE(t testing.TestingT, options *Options, key string) (string, erro
 	return cleanTerragruntJson(rawOutput)
 }
 
+// OutputAll gets all stack outputs and returns them as a map[string]interface{}
+func OutputAll(t testing.TestingT, options *Options) map[string]interface{} {
+	outputs, err := OutputAllE(t, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return outputs
+}
+
+// OutputAllE gets all stack outputs and returns them as a map[string]interface{}
+func OutputAllE(t testing.TestingT, options *Options) (map[string]interface{}, error) {
+	jsonOutput, err := OutputJsonE(t, options, "")
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonOutput), &outputs); err != nil {
+		return nil, err
+	}
+
+	return outputs, nil
+}
+
+// OutputListAll gets all stack output variable names and returns them as a slice
+func OutputListAll(t testing.TestingT, options *Options) []string {
+	keys, err := OutputListAllE(t, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return keys
+}
+
+// OutputListAllE gets all stack output variable names and returns them as a slice
+func OutputListAllE(t testing.TestingT, options *Options) ([]string, error) {
+	outputs, err := OutputAllE(t, options)
+	if err != nil {
+		return nil, err
+	}
+
+	keys := make([]string, 0, len(outputs))
+	for key := range outputs {
+		keys = append(keys, key)
+	}
+
+	return keys, nil
+}
+
 var (
 	// tgLogLevel matches log lines containing fields for time, level, prefix, binary, and message
 	tgLogLevel = regexp.MustCompile(`.*time=\S+ level=\S+ prefix=\S+ binary=\S+ msg=.*`)

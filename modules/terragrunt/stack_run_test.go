@@ -8,7 +8,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStackRunPlan(t *testing.T) {
+func TestStackRun(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	require.NoError(t, err)
+
+	Init(t, &Options{
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
+		TerraformArgs:    []string{"-upgrade=true"},
+	})
+
+	out := StackRun(t, &Options{
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
+		TerraformArgs:    []string{"plan"},
+	})
+
+	require.True(t, containsEitherString(out, "Processing unit", "Generating unit"))
+	require.DirExists(t, path.Join(testFolder, "live", ".terragrunt-stack"))
+}
+
+func TestStackRunE(t *testing.T) {
 	t.Parallel()
 
 	testFolder, err := files.CopyTerraformFolderToTemp(

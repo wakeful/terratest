@@ -16,6 +16,28 @@ func TestStackGenerate(t *testing.T) {
 		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
+	Init(t, &Options{
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
+		TerraformArgs:    []string{"-upgrade=true"},
+	})
+
+	out := StackGenerate(t, &Options{
+		TerragruntDir:    path.Join(testFolder, "live"),
+		TerragruntBinary: "terragrunt",
+	})
+
+	require.True(t, containsEitherString(out, "Processing unit", "Generating unit"))
+	require.DirExists(t, path.Join(testFolder, "live", ".terragrunt-stack"))
+}
+
+func TestStackGenerateE(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
+	require.NoError(t, err)
+
 	// First initialize the stack
 	_, err = InitE(t, &Options{
 		TerragruntDir:    path.Join(testFolder, "live"),
