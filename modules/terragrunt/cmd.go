@@ -10,7 +10,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/testing"
 )
 
-// runTerragruntStackCommandE executes tg stack commands
+// runTerragruntStackCommandE executes terragrunt stack commands
 // It handles argument construction, retry logic, and error handling for all stack commands
 func runTerragruntStackCommandE(
 	t testing.TestingT, opts *Options, subCommand string, additionalArgs ...string) (string, error) {

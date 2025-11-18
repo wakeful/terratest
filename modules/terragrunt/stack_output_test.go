@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Integration test using actual tg stack fixture
-func TestTgOutputIntegration(t *testing.T) {
+// Integration test using actual terragrunt stack fixture
+func TestOutputIntegration(t *testing.T) {
 	t.Parallel()
 
 	// Create a temporary copy of the stack fixture
@@ -27,7 +27,7 @@ func TestTgOutputIntegration(t *testing.T) {
 	}
 
 	// Initialize and apply tg using stack commands
-	_, err = TgInitE(t, options)
+	_, err = InitE(t, options)
 	require.NoError(t, err)
 
 	applyOptions := &Options{
@@ -36,7 +36,7 @@ func TestTgOutputIntegration(t *testing.T) {
 		Logger:           logger.Discard,
 		TerraformArgs:    []string{"apply"}, // stack run auto-approves by default
 	}
-	_, err = TgStackRunE(t, applyOptions)
+	_, err = StackRunE(t, applyOptions)
 	require.NoError(t, err)
 
 	// Clean up after test
@@ -47,26 +47,26 @@ func TestTgOutputIntegration(t *testing.T) {
 			Logger:           logger.Discard,
 			TerraformArgs:    []string{"destroy"}, // stack run auto-approves by default
 		}
-		_, _ = TgStackRunE(t, destroyOptions)
+		_, _ = StackRunE(t, destroyOptions)
 	}()
 
 	// Test string stack output - get output from mother unit
-	strOutput := TgOutput(t, options, "mother")
+	strOutput := Output(t, options, "mother")
 	assert.Contains(t, strOutput, "./test.txt")
 
-	// Test getting stack output as JSON using the TgOutputJson function
+	// Test getting stack output as JSON using the OutputJson function
 	jsonOptions := &Options{
 		TerragruntDir:    testFolder + "/live",
 		TerragruntBinary: "terragrunt",
 		Logger:           logger.Discard,
 	}
 
-	strOutputJson := TgOutputJson(t, jsonOptions, "mother")
+	strOutputJson := OutputJson(t, jsonOptions, "mother")
 	// The JSON output for a single value should still be cleaned to just show the value
 	assert.Contains(t, strOutputJson, "./test.txt")
 
 	// Test getting all stack outputs as JSON
-	allOutputsJson := TgOutputJson(t, jsonOptions, "")
+	allOutputsJson := OutputJson(t, jsonOptions, "")
 	require.NotEmpty(t, allOutputsJson)
 
 	// For JSON output of all outputs, we should get valid JSON
@@ -97,7 +97,7 @@ func TestTgOutputIntegration(t *testing.T) {
 }
 
 // Test error handling with non-existent stack output
-func TestTgOutputErrorHandling(t *testing.T) {
+func TestOutputErrorHandling(t *testing.T) {
 	t.Parallel()
 
 	// Create a temporary copy of the stack fixture
@@ -112,7 +112,7 @@ func TestTgOutputErrorHandling(t *testing.T) {
 	}
 
 	// Initialize and apply tg using stack commands
-	_, err = TgInitE(t, options)
+	_, err = InitE(t, options)
 	require.NoError(t, err)
 
 	applyOptions := &Options{
@@ -121,7 +121,7 @@ func TestTgOutputErrorHandling(t *testing.T) {
 		Logger:           logger.Discard,
 		TerraformArgs:    []string{"apply"}, // stack run auto-approves by default
 	}
-	_, err = TgStackRunE(t, applyOptions)
+	_, err = StackRunE(t, applyOptions)
 	require.NoError(t, err)
 
 	// Clean up after test
@@ -132,11 +132,11 @@ func TestTgOutputErrorHandling(t *testing.T) {
 			Logger:           logger.Discard,
 			TerraformArgs:    []string{"destroy"}, // stack run auto-approves by default
 		}
-		_, _ = TgStackRunE(t, destroyOptions)
+		_, _ = StackRunE(t, destroyOptions)
 	}()
 
 	// Test that non-existent stack output returns error or empty string
-	output, err := TgOutputE(t, options, "non_existent_output")
+	output, err := OutputE(t, options, "non_existent_output")
 	// Tg stack output might return empty string for non-existent outputs
 	// rather than an error, so we need to handle both cases
 	if err != nil {

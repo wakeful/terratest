@@ -8,17 +8,17 @@ import (
 	"github.com/gruntwork-io/terratest/modules/testing"
 )
 
-// TgOutput calls tg stack output for the given variable and returns its value as a string
-func TgOutput(t testing.TestingT, options *Options, key string) string {
-	out, err := TgOutputE(t, options, key)
+// Output calls terragrunt stack output for the given variable and returns its value as a string
+func Output(t testing.TestingT, options *Options, key string) string {
+	out, err := OutputE(t, options, key)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return out
 }
 
-// TgOutputE calls tg stack output for the given variable and returns its value as a string
-func TgOutputE(t testing.TestingT, options *Options, key string) (string, error) {
+// OutputE calls terragrunt stack output for the given variable and returns its value as a string
+func OutputE(t testing.TestingT, options *Options, key string) (string, error) {
 	// Prepare options with no-color flag for parsing
 	optsCopy := *options
 	optsCopy.TerragruntArgs = append([]string{"--no-color"}, options.TerragruntArgs...)
@@ -47,20 +47,20 @@ func TgOutputE(t testing.TestingT, options *Options, key string) (string, error)
 	return cleaned, nil
 }
 
-// TgOutputJson calls tg stack output for the given variable and returns the result as the json string.
+// OutputJson calls terragrunt stack output for the given variable and returns the result as the json string.
 // If key is an empty string, it will return all the output variables.
-func TgOutputJson(t testing.TestingT, options *Options, key string) string {
-	str, err := TgOutputJsonE(t, options, key)
+func OutputJson(t testing.TestingT, options *Options, key string) string {
+	str, err := OutputJsonE(t, options, key)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return str
 }
 
-// TgOutputJsonE calls tg stack output for the given variable and returns the
+// OutputJsonE calls terragrunt stack output for the given variable and returns the
 // result as the json string.
 // If key is an empty string, it will return all the output variables.
-func TgOutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
+func OutputJsonE(t testing.TestingT, options *Options, key string) (string, error) {
 	// Prepare options with no-color flag
 	optsCopy := *options
 	optsCopy.TerragruntArgs = append([]string{"--no-color"}, options.TerragruntArgs...)
@@ -110,7 +110,7 @@ func removeLogLines(rawOutput string) string {
 	return strings.Join(result, "\n")
 }
 
-// cleanTerragruntOutput extracts the actual output value from tg stack's verbose output
+// cleanTerragruntOutput extracts the actual output value from terragrunt stack's verbose output
 //
 // Example input (raw tg output):
 //
@@ -152,7 +152,7 @@ func cleanTerragruntOutput(rawOutput string) (string, error) {
 	return finalOutput, nil
 }
 
-// cleanTerragruntJson cleans the JSON output from tg stack command
+// cleanTerragruntJson cleans the JSON output from terragrunt stack command
 //
 // Example input (raw tg JSON output):
 //
