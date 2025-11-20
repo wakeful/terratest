@@ -145,3 +145,152 @@ func TestOutputErrorHandling(t *testing.T) {
 		assert.Empty(t, output, "Expected empty output for non-existent stack output")
 	}
 }
+
+// Test OutputAll to get all stack outputs as a map
+func TestOutputAll(t *testing.T) {
+	t.Parallel()
+
+	// Create a temporary copy of the stack fixture
+	testFolder, err := files.CopyTerragruntFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-all-test")
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir:    testFolder + "/live",
+		TerragruntBinary: "terragrunt",
+		Logger:           logger.Discard,
+	}
+
+	// Initialize and apply tg using stack commands
+	_, err = InitE(t, options)
+	require.NoError(t, err)
+
+	applyOptions := &Options{
+		TerragruntDir:    testFolder + "/live",
+		TerragruntBinary: "terragrunt",
+		Logger:           logger.Discard,
+		TerraformArgs:    []string{"apply"}, // stack run auto-approves by default
+	}
+	_, err = StackRunE(t, applyOptions)
+	require.NoError(t, err)
+
+	// Clean up after test
+	defer func() {
+		destroyOptions := &Options{
+			TerragruntDir:    testFolder + "/live",
+			TerragruntBinary: "terragrunt",
+			Logger:           logger.Discard,
+			TerraformArgs:    []string{"destroy"}, // stack run auto-approves by default
+		}
+		_, _ = StackRunE(t, destroyOptions)
+	}()
+
+	// Test OutputAll - get all outputs as a map
+	allOutputs := OutputAll(t, options)
+	require.NotEmpty(t, allOutputs)
+
+	// Verify expected outputs are present
+	require.Contains(t, allOutputs, "mother")
+	require.Contains(t, allOutputs, "father")
+	require.Contains(t, allOutputs, "chick_1")
+	require.Contains(t, allOutputs, "chick_2")
+
+	// Verify we can access specific output values
+	motherOutput := allOutputs["mother"].(map[string]interface{})
+	assert.Equal(t, "./test.txt", motherOutput["output"])
+}
+
+// Test OutputListAll to get all stack output keys
+func TestOutputListAll(t *testing.T) {
+	t.Parallel()
+
+	// Create a temporary copy of the stack fixture
+	testFolder, err := files.CopyTerragruntFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-list-test")
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir:    testFolder + "/live",
+		TerragruntBinary: "terragrunt",
+		Logger:           logger.Discard,
+	}
+
+	// Initialize and apply using stack commands
+	_, err = InitE(t, options)
+	require.NoError(t, err)
+
+	applyOptions := &Options{
+		TerragruntDir:    testFolder + "/live",
+		TerragruntBinary: "terragrunt",
+		Logger:           logger.Discard,
+		TerraformArgs:    []string{"apply"},
+	}
+	_, err = StackRunE(t, applyOptions)
+	require.NoError(t, err)
+
+	// Clean up after test
+	defer func() {
+		destroyOptions := &Options{
+			TerragruntDir:    testFolder + "/live",
+			TerragruntBinary: "terragrunt",
+			Logger:           logger.Discard,
+			TerraformArgs:    []string{"destroy"},
+		}
+		_, _ = StackRunE(t, destroyOptions)
+	}()
+
+	// Test OutputListAll - get all output keys
+	keys := OutputListAll(t, options)
+	require.NotEmpty(t, keys)
+
+	// Verify expected keys are present
+	require.Contains(t, keys, "mother")
+	require.Contains(t, keys, "father")
+	require.Contains(t, keys, "chick_1")
+	require.Contains(t, keys, "chick_2")
+
+	// Verify we got all 4 keys
+	require.Len(t, keys, 4)
+}
+
+// Test OutputListAllE
+func TestOutputListAllE(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerragruntFolderToTemp(
+		"../../test/fixtures/terragrunt/terragrunt-stack-init", "tg-stack-output-list-e-test")
+	require.NoError(t, err)
+
+	options := &Options{
+		TerragruntDir:    testFolder + "/live",
+		TerragruntBinary: "terragrunt",
+		Logger:           logger.Discard,
+	}
+
+	_, err = InitE(t, options)
+	require.NoError(t, err)
+
+	applyOptions := &Options{
+		TerragruntDir:    testFolder + "/live",
+		TerragruntBinary: "terragrunt",
+		Logger:           logger.Discard,
+		TerraformArgs:    []string{"apply"},
+	}
+	_, err = StackRunE(t, applyOptions)
+	require.NoError(t, err)
+
+	defer func() {
+		destroyOptions := &Options{
+			TerragruntDir:    testFolder + "/live",
+			TerragruntBinary: "terragrunt",
+			Logger:           logger.Discard,
+			TerraformArgs:    []string{"destroy"},
+		}
+		_, _ = StackRunE(t, destroyOptions)
+	}()
+
+	keys, err := OutputListAllE(t, options)
+	require.NoError(t, err)
+	require.NotEmpty(t, keys)
+	require.Contains(t, keys, "mother")
+}

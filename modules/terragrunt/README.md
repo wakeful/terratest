@@ -85,10 +85,13 @@ options := &terragrunt.Options{
 ### Non-Stack Commands
 Work with standard terragrunt configurations (dependencies via `dependency` blocks):
 
+- `Init(t, options)` - Initialize configuration
 - `ApplyAll(t, options)` - Apply all modules with dependencies
 - `DestroyAll(t, options)` - Destroy all modules with dependencies
 - `PlanAllExitCode(t, options)` - Plan all and return exit code (0=no changes, 2=changes)
-- `Init(t, options)` - Initialize configuration
+- `ValidateAll(t, options)` - Validate all modules
+- `RunAll(t, options, command)` - Run any terraform command with --all flag
+- `FormatAll(t, options)` - Format all terragrunt.hcl files
 
 ### Stack Commands
 Work with `terragrunt.stack.hcl` configurations:
@@ -99,6 +102,7 @@ Work with `terragrunt.stack.hcl` configurations:
 - `Output(t, options, key)` - Get stack output value
 - `OutputJson(t, options, key)` - Get stack output as JSON
 - `OutputAll(t, options)` - Get all stack outputs as map
+- `OutputListAll(t, options)` - Get list of all output variable names
 
 ## Examples
 
@@ -177,6 +181,47 @@ func TestInfrastructureUpToDate(t *testing.T) {
     // Plan should show no changes (exit code 0)
     exitCode := terragrunt.PlanAllExitCode(t, options)
     assert.Equal(t, 0, exitCode, "No changes expected")
+}
+```
+
+### Using RunAll for Flexibility
+
+```go
+func TestCustomCommand(t *testing.T) {
+    t.Parallel()
+
+    options := &terragrunt.Options{
+        TerragruntDir: "../modules",
+    }
+
+    // Run any terraform command with --all
+    terragrunt.RunAll(t, options, "refresh")
+
+    // Verify state is current
+    output := terragrunt.RunAll(t, options, "show")
+    assert.Contains(t, output, "expected-resource")
+}
+```
+
+### Validating Output Keys
+
+```go
+func TestOutputKeys(t *testing.T) {
+    t.Parallel()
+
+    options := &terragrunt.Options{
+        TerragruntDir: "../stack",
+    }
+
+    terragrunt.ApplyAll(t, options)
+    defer terragrunt.DestroyAll(t, options)
+
+    // Get list of all output keys
+    keys := terragrunt.OutputListAll(t, options)
+
+    // Verify required outputs exist
+    assert.Contains(t, keys, "vpc_id")
+    assert.Contains(t, keys, "subnet_ids")
 }
 ```
 
