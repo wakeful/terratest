@@ -20,7 +20,8 @@ func TestInit(t *testing.T) {
 		TerragruntBinary: "terragrunt",
 		TerraformArgs:    []string{"-upgrade=true"},
 	})
-	require.Contains(t, out, "Terraform has been successfully initialized!")
+	// Check for common success indicator (works with both Terraform and OpenTofu)
+	require.Contains(t, out, "successfully initialized")
 }
 
 func TestInitE(t *testing.T) {
@@ -36,7 +37,8 @@ func TestInitE(t *testing.T) {
 		TerraformArgs:    []string{"-upgrade=true"}, // Common terraform init flag
 	})
 	require.NoError(t, err)
-	require.Contains(t, out, "Terraform has been successfully initialized!")
+	// Check for common success indicator (works with both Terraform and OpenTofu)
+	require.Contains(t, out, "successfully initialized")
 }
 
 func TestInitWithInvalidConfig(t *testing.T) {
