@@ -1,6 +1,7 @@
 package terragrunt
 
 import (
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -249,11 +250,21 @@ func TestEnvVarsPropagation(t *testing.T) {
 		"../../test/fixtures/terragrunt/terragrunt-stack-init", t.Name())
 	require.NoError(t, err)
 
+	// Detect which IaC binary is available (terraform or tofu)
+	tfBinary := "terraform"
+	if _, err := exec.LookPath("terraform"); err != nil {
+		// terraform not found, try tofu
+		if _, err := exec.LookPath("tofu"); err != nil {
+			t.Skip("Neither terraform nor tofu found in PATH")
+		}
+		tfBinary = "tofu"
+	}
+
 	options := &Options{
 		TerragruntDir: filepath.Join(testFolder, "live"),
 		EnvVars: map[string]string{
-			"TERRAGRUNT_TFPATH": "terraform", // Explicitly set terraform binary
-			"TG_LOG_LEVEL":      "error",     // Alternative to --log-level flag
+			"TERRAGRUNT_TFPATH": tfBinary, // Use whichever binary is available
+			"TG_LOG_LEVEL":      "error",  // Alternative to --log-level flag
 		},
 	}
 

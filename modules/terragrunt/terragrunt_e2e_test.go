@@ -88,7 +88,8 @@ func TestStackEndToEndIntegration(t *testing.T) {
 	runOptions.TerraformArgs = []string{"plan"}
 	planOutput, err := StackRunE(t, &runOptions)
 	require.NoError(t, err)
-	require.Contains(t, planOutput, "Terraform will perform", "Stack run should execute plan")
+	// Check for common plan indicator (works with both Terraform and OpenTofu)
+	require.Contains(t, planOutput, "will perform")
 
 	// Step 4: Clean stack
 	t.Log("Step 4: Cleaning stack")
