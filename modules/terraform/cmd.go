@@ -54,15 +54,16 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		options.TerraformBinary = DefaultExecutable
 	}
 
+	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {
+		args = append(args, fmt.Sprintf("--parallelism=%d", options.Parallelism))
+	}
+
 	if options.TerraformBinary == TerragruntDefaultPath {
-		args = append(args, "--non-interactive")
+		// Prepend --non-interactive as a global flag (must come before subcommand)
+		args = append([]string{"--non-interactive"}, args...)
 
 		// for newer Terragrunt version, setting simplified log formatting
 		setTerragruntLogFormatting(options)
-	}
-
-	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {
-		args = append(args, fmt.Sprintf("--parallelism=%d", options.Parallelism))
 	}
 
 	// if SshAgent is provided, override the local SSH agent with the socket of our in-process agent
