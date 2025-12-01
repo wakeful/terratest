@@ -166,7 +166,7 @@ func FindTerraformModulePathsInRootE(opts *ValidationOptions) ([]string, error) 
 	terraformDirSet := make(map[string]string)
 	for _, match := range matches {
 		// The glob match returns all full paths to every target file, whereas we're only interested in their root
-		// directories for the purposes of running Terraform validate / terragrunt validate-inputs
+		// directories for the purposes of running Terraform validate / terragrunt hcl validate
 		rootDir := path.Dir(match)
 		// Don't include hidden .terraform directories when finding paths to validate
 		if !files.PathContainsHiddenFileOrFolder(rootDir) {

@@ -31,7 +31,6 @@ var commandsWithParallelism = []string{
 	"apply",
 	"destroy",
 	"plan-all",
-	"run-all",
 	"apply-all",
 	"destroy-all",
 }
@@ -56,7 +55,7 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 	}
 
 	if options.TerraformBinary == TerragruntDefaultPath {
-		args = append(args, "--terragrunt-non-interactive")
+		args = append(args, "--non-interactive")
 
 		// for newer Terragrunt version, setting simplified log formatting
 		setTerragruntLogFormatting(options)
@@ -217,8 +216,8 @@ func hasWarning(opts *Options, out string) error {
 // if it is not already set in options.EnvVars or OS environment vars
 func setTerragruntLogFormatting(options *Options) {
 	const (
-		tgLogFormatKey       = "TERRAGRUNT_LOG_FORMAT"
-		tgLogCustomFormatKey = "TERRAGRUNT_LOG_CUSTOM_FORMAT"
+		tgLogFormatKey       = "TG_LOG_FORMAT"
+		tgLogCustomFormatKey = "TG_LOG_CUSTOM_FORMAT"
 	)
 
 	if options.EnvVars == nil {
