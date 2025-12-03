@@ -31,7 +31,6 @@ var commandsWithParallelism = []string{
 	"apply",
 	"destroy",
 	"plan-all",
-	"run-all",
 	"apply-all",
 	"destroy-all",
 }
@@ -55,15 +54,16 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		options.TerraformBinary = DefaultExecutable
 	}
 
+	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {
+		args = append(args, fmt.Sprintf("--parallelism=%d", options.Parallelism))
+	}
+
 	if options.TerraformBinary == TerragruntDefaultPath {
-		args = append(args, "--terragrunt-non-interactive")
+		// Prepend --non-interactive as a global flag (must come before subcommand)
+		args = append([]string{"--non-interactive"}, args...)
 
 		// for newer Terragrunt version, setting simplified log formatting
 		setTerragruntLogFormatting(options)
-	}
-
-	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {
-		args = append(args, fmt.Sprintf("--parallelism=%d", options.Parallelism))
 	}
 
 	// if SshAgent is provided, override the local SSH agent with the socket of our in-process agent
@@ -217,8 +217,8 @@ func hasWarning(opts *Options, out string) error {
 // if it is not already set in options.EnvVars or OS environment vars
 func setTerragruntLogFormatting(options *Options) {
 	const (
-		tgLogFormatKey       = "TERRAGRUNT_LOG_FORMAT"
-		tgLogCustomFormatKey = "TERRAGRUNT_LOG_CUSTOM_FORMAT"
+		tgLogFormatKey       = "TG_LOG_FORMAT"
+		tgLogCustomFormatKey = "TG_LOG_CUSTOM_FORMAT"
 	)
 
 	if options.EnvVars == nil {

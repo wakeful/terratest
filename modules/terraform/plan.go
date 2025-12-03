@@ -134,17 +134,17 @@ func TgPlanAllExitCode(t testing.TestingT, options *Options) int {
 	return exitCode
 }
 
-// TgPlanAllExitCodeE runs terragrunt plan-all with the given options and returns the detailed exitcode.
+// TgPlanAllExitCodeE runs terragrunt plan --all with the given options and returns the detailed exitcode.
 func TgPlanAllExitCodeE(t testing.TestingT, options *Options) (int, error) {
 	if options.TerraformBinary != "terragrunt" {
 		return 1, fmt.Errorf("terragrunt must be set as TerraformBinary to use this method")
 	}
 
-	return GetExitCodeForTerraformCommandE(t, options, FormatArgs(options, prepend(options.ExtraArgs.Plan, "run-all", "plan", "--input=false",
+	return GetExitCodeForTerraformCommandE(t, options, FormatArgs(options, prepend(options.ExtraArgs.Plan, "plan", "--all", "--input=false",
 		"--lock=true", "--detailed-exitcode")...)...)
 }
 
-// AssertTgPlanAllExitCode asserts the succuess (or failure) of a terragrunt run-all plan.
+// AssertTgPlanAllExitCode asserts the success (or failure) of a terragrunt plan --all.
 // On success, terragrunt will exit 0 on a plan that has previously been applied (has state)
 // and exit with 2 for plans that have never been applied when ran with `-detailed-exitcode`.
 func AssertTgPlanAllExitCode(t testing.TestingT, exitCode int, assertTrue bool) {

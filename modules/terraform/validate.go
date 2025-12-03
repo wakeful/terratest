@@ -12,7 +12,7 @@ func Validate(t testing.TestingT, options *Options) string {
 	return out
 }
 
-// ValidateInputs calls terragrunt validate and returns stdout/stderr.
+// ValidateInputs calls terragrunt hcl validate and returns stdout/stderr.
 func ValidateInputs(t testing.TestingT, options *Options) string {
 	out, err := ValidateInputsE(t, options)
 	require.NoError(t, err)
@@ -24,12 +24,12 @@ func ValidateE(t testing.TestingT, options *Options) (string, error) {
 	return RunTerraformCommandE(t, options, FormatArgs(options, prepend(options.ExtraArgs.Validate, "validate")...)...)
 }
 
-// ValidateInputsE calls terragrunt validate-inputs and returns stdout/stderr
+// ValidateInputsE calls terragrunt hcl validate and returns stdout/stderr
 func ValidateInputsE(t testing.TestingT, options *Options) (string, error) {
 	if options.TerraformBinary != "terragrunt" {
 		return "", TgInvalidBinary(options.TerraformBinary)
 	}
-	return RunTerraformCommandE(t, options, FormatArgs(options, prepend(options.ExtraArgs.ValidateInputs, "validate-inputs")...)...)
+	return RunTerraformCommandE(t, options, FormatArgs(options, prepend(options.ExtraArgs.ValidateInputs, "hcl", "validate")...)...)
 }
 
 // InitAndValidate runs terraform init and validate with the given options and returns stdout/stderr from the validate command.
@@ -40,7 +40,7 @@ func InitAndValidate(t testing.TestingT, options *Options) string {
 	return out
 }
 
-// InitAndValidateInputs runs terragrunt init and validate-inputs with the given options and returns stdout/stderr from the validate command.
+// InitAndValidateInputs runs terragrunt init and hcl validate with the given options and returns stdout/stderr from the validate command.
 func InitAndValidateInputs(t testing.TestingT, options *Options) string {
 	out, err := InitAndValidateInputsE(t, options)
 	require.NoError(t, err)
@@ -56,7 +56,7 @@ func InitAndValidateE(t testing.TestingT, options *Options) (string, error) {
 	return ValidateE(t, options)
 }
 
-// InitAndValidateInputsE runs terragrunt init and validate with the given options and returns stdout/stderr
+// InitAndValidateInputsE runs terragrunt init and hcl validate with the given options and returns stdout/stderr
 func InitAndValidateInputsE(t testing.TestingT, options *Options) (string, error) {
 	if _, err := InitE(t, options); err != nil {
 		return "", err

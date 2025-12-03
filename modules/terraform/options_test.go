@@ -78,7 +78,7 @@ func TestExtraArgsHelp(t *testing.T) {
 			},
 		},
 		{
-			name: "validate-inputs",
+			name: "hcl validate",
 			fn: func() (string, error) {
 				return ValidateInputsE(t, &Options{
 					ExtraArgs: ExtraArgs{ValidateInputs: []string{"-help"}}, TerraformBinary: "terragrunt"})
