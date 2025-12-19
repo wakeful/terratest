@@ -1,6 +1,7 @@
 package test
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -44,8 +45,10 @@ func TestTerragruntExample(t *testing.T) {
 
 	// Run `terraform output` to get the values of output variables and check they have
 	// the expected values.
-	output := terraform.Output(t, terraformOptions, "output")
-	assert.Equal(t, "one input another input", output)
+	// Note: When using terragrunt, OutputAll is recommended because terragrunt returns
+	// all outputs in the full JSON format even when a specific key is requested.
+	outputs := terraform.OutputAll(t, terraformOptions)
+	assert.Equal(t, "one input another input", outputs["output"])
 }
 
 // TestTerragruntConsole demonstrates running terragrunt console command.
@@ -71,13 +74,15 @@ func TestTerragruntConsole(t *testing.T) {
 func TestTerragruntMultiModuleExample(t *testing.T) {
 	t.Parallel()
 
-	// Copy the example to a temp folder to avoid state conflicts with parallel tests
+	// Copy the entire example folder (including modules) to a temp folder.
+	// We copy the parent folder because terragrunt.hcl files reference ../modules.
 	testFolder, err := files.CopyTerragruntFolderToTemp(
-		"../examples/terragrunt-multi-module-example/live", t.Name())
+		"../examples/terragrunt-multi-module-example", t.Name())
 	require.NoError(t, err)
 
 	options := &terragrunt.Options{
-		TerragruntDir: testFolder,
+		// Run from the live subfolder where the terragrunt configs are
+		TerragruntDir: filepath.Join(testFolder, "live"),
 		// Optional: Set log level for cleaner output
 		TerragruntArgs: []string{"--log-level", "error"},
 	}
