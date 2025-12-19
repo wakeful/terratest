@@ -4,45 +4,92 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/gruntwork-io/terratest/modules/terragrunt"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+// This file demonstrates two approaches for testing Terragrunt configurations:
+//
+// 1. SINGLE-MODULE TESTING: Use the terraform module with TerraformBinary set to "terragrunt".
+//    This works because terragrunt is a thin wrapper around terraform for single modules.
+//    See: TestTerragruntExample, TestTerragruntConsole
+//
+// 2. MULTI-MODULE TESTING: Use the dedicated terragrunt module with ApplyAll/DestroyAll.
+//    This is for testing multiple Terragrunt modules with dependencies using --all commands.
+//    See: TestTerragruntMultiModuleExample
+
+// TestTerragruntExample demonstrates testing a single Terragrunt module using the terraform package.
+// For single-module testing, use terraform.Options with TerraformBinary set to "terragrunt".
 func TestTerragruntExample(t *testing.T) {
-	// website::tag::3:: Construct the terraform options with default retryable errors to handle the most common retryable errors in terraform testing.
+	t.Parallel()
+
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		// website::tag::1:: Set the path to the Terragrunt module that will be tested.
+		// Set the path to the Terragrunt module that will be tested.
 		TerraformDir: "../examples/terragrunt-example",
-		// website::tag::2:: Set the terraform binary path to terragrunt so that terratest uses terragrunt instead of terraform. You must ensure that you have terragrunt downloaded and available in your PATH.
+		// Set the terraform binary path to terragrunt so that terratest uses terragrunt
+		// instead of terraform. You must ensure that you have terragrunt downloaded and
+		// available in your PATH.
 		TerraformBinary: "terragrunt",
 	})
 
-	// website::tag::6:: Clean up resources with "terragrunt destroy" at the end of the test.
+	// Clean up resources with "terragrunt destroy" at the end of the test.
 	defer terraform.Destroy(t, terraformOptions)
 
-	// website::tag::4:: Run "terragrunt apply". Under the hood, terragrunt will run "terraform init" and "terraform apply". Fail the test if there are any errors.
+	// Run "terragrunt apply". Under the hood, terragrunt will run "terraform init" and
+	// "terraform apply". Fail the test if there are any errors.
 	terraform.Apply(t, terraformOptions)
 
-	// website::tag::5:: Run `terraform output` to get the values of output variables and check they have the expected values.
+	// Run `terraform output` to get the values of output variables and check they have
+	// the expected values.
 	output := terraform.Output(t, terraformOptions, "output")
 	assert.Equal(t, "one input another input", output)
 }
 
+// TestTerragruntConsole demonstrates running terragrunt console command.
 func TestTerragruntConsole(t *testing.T) {
-	// website::tag::3:: Construct the terraform options with default retryable errors to handle the most common retryable errors in terraform testing.
+	t.Parallel()
+
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		// website::tag::1:: Set the path to the Terragrunt module that will be tested.
-		TerraformDir: "../examples/terragrunt-example",
-		// website::tag::2:: Set the terraform binary path to terragrunt so that terratest uses terragrunt instead of terraform. You must ensure that you have terragrunt downloaded and available in your PATH.
+		TerraformDir:    "../examples/terragrunt-example",
 		TerraformBinary: "terragrunt",
-		// website::tag::3:: Set stdin to a string reader to simulate user input.
-		Stdin: strings.NewReader("local.mylocal"),
+		Stdin:           strings.NewReader("local.mylocal"),
 	})
 
-	// website::tag::6:: Clean up resources with "terragrunt destroy" at the end of the test.
 	defer terraform.Destroy(t, terraformOptions)
 
-	// website::tag::4:: Run "terragrunt run -- console".
+	// Run "terragrunt run -- console".
 	out := terraform.RunTerraformCommand(t, terraformOptions, "run", "--", "console")
 	assert.Contains(t, out, `"local variable named mylocal"`)
+}
+
+// TestTerragruntMultiModuleExample demonstrates testing multiple Terragrunt modules
+// using the dedicated terragrunt package. Use this approach when you have multiple
+// modules with dependencies that need to be applied/destroyed together using --all.
+func TestTerragruntMultiModuleExample(t *testing.T) {
+	t.Parallel()
+
+	// Copy the example to a temp folder to avoid state conflicts with parallel tests
+	testFolder, err := files.CopyTerragruntFolderToTemp(
+		"../examples/terragrunt-multi-module-example/live", t.Name())
+	require.NoError(t, err)
+
+	options := &terragrunt.Options{
+		TerragruntDir: testFolder,
+		// Optional: Set log level for cleaner output
+		TerragruntArgs: []string{"--log-level", "error"},
+	}
+
+	// Clean up all modules with "terragrunt destroy --all" at the end of the test.
+	// DestroyAll respects the reverse dependency order.
+	defer terragrunt.DestroyAll(t, options)
+
+	// Run "terragrunt apply --all". This applies all modules in dependency order.
+	terragrunt.ApplyAll(t, options)
+
+	// Verify the plan shows no changes (infrastructure is up-to-date)
+	exitCode := terragrunt.PlanAllExitCode(t, options)
+	assert.Equal(t, 0, exitCode, "Plan should show no changes after apply")
 }

@@ -6,7 +6,9 @@ import (
 )
 
 // TgInvalidBinary occurs when a terragrunt function is called and the TerraformBinary is
-// set to a value other than terragrunt
+// set to a value other than terragrunt.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt package instead.
 type TgInvalidBinary string
 
 func (err TgInvalidBinary) Error() string {

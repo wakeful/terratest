@@ -52,7 +52,7 @@
       url: https://github.com/gruntwork-io/terratest/tree/main/examples/kubernetes-hello-world-example
 
 - id: terragrunt-hello-world
-  name: Terragrunt Example
+  name: Terragrunt Single-Module Example
   image: /assets/img/logos/terragrunt-logo.png
   files:
     - url: /examples/terragrunt-example/terragrunt.hcl
@@ -63,8 +63,25 @@
       id: test_code
       default: true
   learn_more:
-    - name: Terragrunt
+    - name: Terragrunt Single-Module
       url: https://github.com/gruntwork-io/terratest/tree/main/examples/terragrunt-example
+
+- id: terragrunt-multi-module
+  name: Terragrunt Multi-Module Example
+  image: /assets/img/logos/terragrunt-logo.png
+  files:
+    - url: /examples/terragrunt-multi-module-example/live/app/terragrunt.hcl
+      id: app_terragrunt_code
+    - url: /examples/terragrunt-multi-module-example/live/database/terragrunt.hcl
+      id: database_terragrunt_code
+    - url: /examples/terragrunt-multi-module-example/live/vpc/terragrunt.hcl
+      id: vpc_terragrunt_code
+    - url: /test/terragrunt_example_test.go
+      id: test_code
+      default: true
+  learn_more:
+    - name: Terragrunt Multi-Module
+      url: https://github.com/gruntwork-io/terratest/tree/main/examples/terragrunt-multi-module-example
 
 - id: aws-hello-world
   name: AWS Hello, World Example

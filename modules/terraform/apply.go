@@ -37,6 +37,8 @@ func Apply(t testing.TestingT, options *Options) string {
 
 // TgApplyAll runs terragrunt apply with the given options and return stdout/stderr. Note that this method does NOT call destroy and
 // assumes the caller is responsible for cleaning up any resources created by running apply.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt.ApplyAll instead.
 func TgApplyAll(t testing.TestingT, options *Options) string {
 	out, err := TgApplyAllE(t, options)
 	require.NoError(t, err)
@@ -51,6 +53,8 @@ func ApplyE(t testing.TestingT, options *Options) (string, error) {
 
 // TgApplyAllE runs terragrunt apply --all with the given options and return stdout/stderr. Note that this method does NOT call destroy and
 // assumes the caller is responsible for cleaning up any resources created by running apply.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt.ApplyAllE instead.
 func TgApplyAllE(t testing.TestingT, options *Options) (string, error) {
 	if options.TerraformBinary != "terragrunt" {
 		return "", TgInvalidBinary(options.TerraformBinary)
