@@ -1,4 +1,4 @@
-package test
+package terragrunt
 
 import (
 	"path/filepath"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/terragrunt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,9 +26,13 @@ import (
 func TestTerragruntExample(t *testing.T) {
 	t.Parallel()
 
+	// Copy the example folder to a temp folder to avoid state conflicts between parallel tests.
+	testFolder, err := files.CopyTerragruntFolderToTemp("../../examples/terragrunt-example", t.Name())
+	require.NoError(t, err)
+
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// Set the path to the Terragrunt module that will be tested.
-		TerraformDir: "../examples/terragrunt-example",
+		TerraformDir: testFolder,
 		// Set the terraform binary path to terragrunt so that terratest uses terragrunt
 		// instead of terraform. You must ensure that you have terragrunt downloaded and
 		// available in your PATH.
@@ -55,8 +58,12 @@ func TestTerragruntExample(t *testing.T) {
 func TestTerragruntConsole(t *testing.T) {
 	t.Parallel()
 
+	// Copy the example folder to a temp folder to avoid state conflicts between parallel tests.
+	testFolder, err := files.CopyTerragruntFolderToTemp("../../examples/terragrunt-example", t.Name())
+	require.NoError(t, err)
+
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir:    "../examples/terragrunt-example",
+		TerraformDir:    testFolder,
 		TerraformBinary: "terragrunt",
 		Stdin:           strings.NewReader("local.mylocal"),
 	})
@@ -77,10 +84,10 @@ func TestTerragruntMultiModuleExample(t *testing.T) {
 	// Copy the entire example folder (including modules) to a temp folder.
 	// We copy the parent folder because terragrunt.hcl files reference ../modules.
 	testFolder, err := files.CopyTerragruntFolderToTemp(
-		"../examples/terragrunt-multi-module-example", t.Name())
+		"../../examples/terragrunt-multi-module-example", t.Name())
 	require.NoError(t, err)
 
-	options := &terragrunt.Options{
+	options := &Options{
 		// Run from the live subfolder where the terragrunt configs are
 		TerragruntDir: filepath.Join(testFolder, "live"),
 		// Optional: Set log level for cleaner output
@@ -89,12 +96,12 @@ func TestTerragruntMultiModuleExample(t *testing.T) {
 
 	// Clean up all modules with "terragrunt destroy --all" at the end of the test.
 	// DestroyAll respects the reverse dependency order.
-	defer terragrunt.DestroyAll(t, options)
+	defer DestroyAll(t, options)
 
 	// Run "terragrunt apply --all". This applies all modules in dependency order.
-	terragrunt.ApplyAll(t, options)
+	ApplyAll(t, options)
 
 	// Verify the plan shows no changes (infrastructure is up-to-date)
-	exitCode := terragrunt.PlanAllExitCode(t, options)
+	exitCode := PlanAllExitCode(t, options)
 	assert.Equal(t, 0, exitCode, "Plan should show no changes after apply")
 }
