@@ -13,6 +13,9 @@ func Validate(t testing.TestingT, options *Options) string {
 }
 
 // ValidateInputs calls terragrunt hcl validate and returns stdout/stderr.
+// This validates Terragrunt HCL syntax and checks for mis-aligned inputs.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt package instead.
 func ValidateInputs(t testing.TestingT, options *Options) string {
 	out, err := ValidateInputsE(t, options)
 	require.NoError(t, err)
@@ -24,7 +27,10 @@ func ValidateE(t testing.TestingT, options *Options) (string, error) {
 	return RunTerraformCommandE(t, options, FormatArgs(options, prepend(options.ExtraArgs.Validate, "validate")...)...)
 }
 
-// ValidateInputsE calls terragrunt hcl validate and returns stdout/stderr
+// ValidateInputsE calls terragrunt hcl validate and returns stdout/stderr.
+// This validates Terragrunt HCL syntax and checks for mis-aligned inputs.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt package instead.
 func ValidateInputsE(t testing.TestingT, options *Options) (string, error) {
 	if options.TerraformBinary != "terragrunt" {
 		return "", TgInvalidBinary(options.TerraformBinary)
@@ -41,6 +47,9 @@ func InitAndValidate(t testing.TestingT, options *Options) string {
 }
 
 // InitAndValidateInputs runs terragrunt init and hcl validate with the given options and returns stdout/stderr from the validate command.
+// This validates Terragrunt HCL syntax and checks for mis-aligned inputs.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt package instead.
 func InitAndValidateInputs(t testing.TestingT, options *Options) string {
 	out, err := InitAndValidateInputsE(t, options)
 	require.NoError(t, err)
@@ -56,7 +65,10 @@ func InitAndValidateE(t testing.TestingT, options *Options) (string, error) {
 	return ValidateE(t, options)
 }
 
-// InitAndValidateInputsE runs terragrunt init and hcl validate with the given options and returns stdout/stderr
+// InitAndValidateInputsE runs terragrunt init and hcl validate with the given options and returns stdout/stderr.
+// This validates Terragrunt HCL syntax and checks for mis-aligned inputs.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt package instead.
 func InitAndValidateInputsE(t testing.TestingT, options *Options) (string, error) {
 	if _, err := InitE(t, options); err != nil {
 		return "", err

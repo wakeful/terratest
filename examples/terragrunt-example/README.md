@@ -1,13 +1,13 @@
 # Terragrunt Example
 
-This folder contains the simplest possible Terragrunt module—one that just passes inputs to terraform-to demonstrate how
-you can use Terratest to write automated tests for your Terragrunt code.
+This folder contains a single Terragrunt module demonstrating how to test it using Terratest's `terraform` package
+with `TerraformBinary: "terragrunt"`.
 
-Check out [test/terragrunt_example_test.go](/test/terragrunt_example_test.go) to see how you can
-write automated tests for this simple module.
+Check out [test/terragrunt_example_test.go](/test/terragrunt_example_test.go) to see how you can write automated tests
+for this module.
 
-Note that this module doesn't do anything useful; it's just here to demonstrate the simplest usage pattern for
-Terratest.
+For testing multiple Terragrunt modules with dependencies (using `--all` commands), see
+[terragrunt-multi-module-example](/examples/terragrunt-multi-module-example).
 
 
 

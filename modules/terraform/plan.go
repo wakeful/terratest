@@ -128,6 +128,8 @@ func PlanExitCodeE(t testing.TestingT, options *Options) (int, error) {
 
 // TgPlanAllExitCode runs terragrunt plan-all with the given options and returns the detailed exitcode.
 // This will fail the test if there is an error in the command.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt.PlanAllExitCode instead.
 func TgPlanAllExitCode(t testing.TestingT, options *Options) int {
 	exitCode, err := TgPlanAllExitCodeE(t, options)
 	require.NoError(t, err)
@@ -135,6 +137,8 @@ func TgPlanAllExitCode(t testing.TestingT, options *Options) int {
 }
 
 // TgPlanAllExitCodeE runs terragrunt plan --all with the given options and returns the detailed exitcode.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt.PlanAllExitCodeE instead.
 func TgPlanAllExitCodeE(t testing.TestingT, options *Options) (int, error) {
 	if options.TerraformBinary != "terragrunt" {
 		return 1, fmt.Errorf("terragrunt must be set as TerraformBinary to use this method")
@@ -147,6 +151,8 @@ func TgPlanAllExitCodeE(t testing.TestingT, options *Options) (int, error) {
 // AssertTgPlanAllExitCode asserts the success (or failure) of a terragrunt plan --all.
 // On success, terragrunt will exit 0 on a plan that has previously been applied (has state)
 // and exit with 2 for plans that have never been applied when ran with `-detailed-exitcode`.
+//
+// Deprecated: Use github.com/gruntwork-io/terratest/modules/terragrunt package instead.
 func AssertTgPlanAllExitCode(t testing.TestingT, exitCode int, assertTrue bool) {
 
 	validExitCodes := map[int]bool{
