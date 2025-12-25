@@ -10,7 +10,6 @@
 package k8s
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -28,7 +27,7 @@ func TestDeleteConfigContext(t *testing.T) {
 	err := DeleteConfigContextWithPathE(t, path, "extra_minikube")
 	require.NoError(t, err)
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	require.NoError(t, err)
 	storedConfig := string(data)
 	assert.Equal(t, BASIC_CONFIG, storedConfig)
@@ -43,7 +42,7 @@ func TestDeleteConfigContextWithAnotherContextRemaining(t *testing.T) {
 	err := DeleteConfigContextWithPathE(t, path, "extra_minikube")
 	require.NoError(t, err)
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	require.NoError(t, err)
 	storedConfig := string(data)
 	assert.Equal(t, EXPECTED_CONFIG_AFTER_EXTRA_MINIKUBE_DELETED_NO_GARBAGE, storedConfig)
@@ -89,7 +88,7 @@ func removeOrphanedClusterAndAuthInfoConfigTestFunc(t *testing.T, inputConfig st
 	RemoveOrphanedClusterAndAuthInfoConfig(&rawConfig)
 	err = clientcmd.ModifyConfig(config.ConfigAccess(), rawConfig, false)
 	require.NoError(t, err)
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	require.NoError(t, err)
 	storedConfig := string(data)
 	assert.Equal(t, expectedOutputConfig, storedConfig)
