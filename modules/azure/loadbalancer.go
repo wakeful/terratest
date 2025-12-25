@@ -36,7 +36,7 @@ func GetLoadBalancerFrontendIPConfigNames(t testing.TestingT, loadBalancerName s
 	return configName
 }
 
-// GetLoadBalancerFrontendIPConfigNamesE ConfigNamesE gets a list of the Frontend IP Configuration Names for the Load Balancer.
+// GetLoadBalancerFrontendIPConfigNamesE gets a list of the Frontend IP Configuration Names for the Load Balancer.
 func GetLoadBalancerFrontendIPConfigNamesE(loadBalancerName string, resourceGroupName string, subscriptionID string) ([]string, error) {
 	lb, err := GetLoadBalancerE(loadBalancerName, resourceGroupName, subscriptionID)
 	if err != nil {

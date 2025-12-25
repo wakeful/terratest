@@ -223,7 +223,7 @@ func saveTestData(t testing.TestingT, path string, overwrite bool, value interfa
 	}
 
 	parentDir := filepath.Dir(path)
-	if err := os.MkdirAll(parentDir, 0777); err != nil {
+	if err := os.MkdirAll(parentDir, 0755); err != nil {
 		t.Fatalf("Failed to create folder %s: %v", parentDir, err)
 	}
 

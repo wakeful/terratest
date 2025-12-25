@@ -36,8 +36,8 @@ type Subnet struct {
 
 const vpcIDFilterName = "vpc-id"
 const defaultForAzFilterName = "default-for-az"
-const resourceTypeFilterName = "resource-id"
-const resourceIdFilterName = "resource-type"
+const resourceTypeFilterName = "resource-type"
+const resourceIdFilterName = "resource-id"
 const vpcResourceTypeFilterValue = "vpc"
 const subnetResourceTypeFilterValue = "subnet"
 const isDefaultFilterName = "isDefault"

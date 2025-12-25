@@ -96,7 +96,7 @@ func BuildE(t testing.TestingT, path string, options *BuildOptions) error {
 		for _, tag := range options.Tags {
 			if err := PushE(t, options.Logger, tag); err != nil {
 				options.Logger.Logf(t, "ERROR: error pushing tag %s", tag)
-				errorsOccurred = multierror.Append(err)
+				errorsOccurred = multierror.Append(errorsOccurred, err)
 			}
 		}
 		return errorsOccurred.ErrorOrNil()

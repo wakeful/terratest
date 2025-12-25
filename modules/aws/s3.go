@@ -571,5 +571,5 @@ type S3AccessLoggingNotEnabledErr struct {
 }
 
 func (err S3AccessLoggingNotEnabledErr) Error() string {
-	return fmt.Sprintf("Server Acess Logging hasn't been enabled for S3 Bucket %s in region %s", err.OriginBucket, err.Region)
+	return fmt.Sprintf("Server Access Logging hasn't been enabled for S3 Bucket %s in region %s", err.OriginBucket, err.Region)
 }

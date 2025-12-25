@@ -166,7 +166,7 @@ func GetPodLogsE(t testing.TestingT, options *KubectlOptions, pod *corev1.Pod, c
 	return output, nil
 }
 
-// GetPodLogsE returns the logs of a Pod at the time when the function was called.  Pass container name if there are more containers in the Pod or set to "" if there is only one.
+// GetPodLogs returns the logs of a Pod at the time when the function was called.  Pass container name if there are more containers in the Pod or set to "" if there is only one.
 func GetPodLogs(t testing.TestingT, options *KubectlOptions, pod *corev1.Pod, containerName string) string {
 	logs, err := GetPodLogsE(t, options, pod, containerName)
 	require.NoError(t, err)

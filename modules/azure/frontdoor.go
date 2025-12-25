@@ -65,13 +65,13 @@ func FrontDoorFrontendEndpointExistsE(endpointName string, frontDoorName string,
 }
 
 // GetFrontDoorE gets the specified Front Door if it exists and may return an error.
-func GetFrontDoorE(frontDoorName, resoureGroupName, subscriptionID string) (*frontdoor.FrontDoor, error) {
+func GetFrontDoorE(frontDoorName, resourceGroupName, subscriptionID string) (*frontdoor.FrontDoor, error) {
 	client, err := GetFrontDoorClientE(subscriptionID)
 	if err != nil {
 		return nil, err
 	}
 
-	fd, err := client.Get(context.Background(), resoureGroupName, frontDoorName)
+	fd, err := client.Get(context.Background(), resourceGroupName, frontDoorName)
 	if err != nil {
 		return nil, err
 	}
