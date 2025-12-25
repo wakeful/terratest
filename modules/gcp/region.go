@@ -178,7 +178,7 @@ func GetAllGcpRegionsE(t testing.TestingT, projectID string) ([]string, error) {
 		for _, region := range page.Items {
 			regions = append(regions, region.Name)
 		}
-		return err
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -214,7 +214,7 @@ func GetAllGcpZonesE(t testing.TestingT, projectID string) ([]string, error) {
 		for _, zone := range page.Items {
 			zones = append(zones, zone.Name)
 		}
-		return err
+		return nil
 	})
 	if err != nil {
 		return nil, err
