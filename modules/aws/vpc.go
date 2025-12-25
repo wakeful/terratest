@@ -222,8 +222,8 @@ func GetTagsForVpcE(t testing.TestingT, vpcID string, region string) (map[string
 	client, err := NewEc2ClientE(t, region)
 	require.NoError(t, err)
 
-	vpcResourceTypeFilter := types.Filter{Name: aws.String(resourceIdFilterName), Values: []string{vpcResourceTypeFilterValue}}
-	vpcResourceIdFilter := types.Filter{Name: aws.String(resourceTypeFilterName), Values: []string{vpcID}}
+	vpcResourceTypeFilter := types.Filter{Name: aws.String(resourceTypeFilterName), Values: []string{vpcResourceTypeFilterValue}}
+	vpcResourceIdFilter := types.Filter{Name: aws.String(resourceIdFilterName), Values: []string{vpcID}}
 	tagsOutput, err := client.DescribeTags(context.Background(), &ec2.DescribeTagsInput{Filters: []types.Filter{vpcResourceTypeFilter, vpcResourceIdFilter}})
 	require.NoError(t, err)
 
@@ -276,8 +276,8 @@ func GetTagsForSubnetE(t testing.TestingT, subnetId string, region string) (map[
 	client, err := NewEc2ClientE(t, region)
 	require.NoError(t, err)
 
-	subnetResourceTypeFilter := types.Filter{Name: aws.String(resourceIdFilterName), Values: []string{subnetResourceTypeFilterValue}}
-	subnetResourceIdFilter := types.Filter{Name: aws.String(resourceTypeFilterName), Values: []string{subnetId}}
+	subnetResourceTypeFilter := types.Filter{Name: aws.String(resourceTypeFilterName), Values: []string{subnetResourceTypeFilterValue}}
+	subnetResourceIdFilter := types.Filter{Name: aws.String(resourceIdFilterName), Values: []string{subnetId}}
 	tagsOutput, err := client.DescribeTags(context.Background(), &ec2.DescribeTagsInput{Filters: []types.Filter{subnetResourceTypeFilter, subnetResourceIdFilter}})
 	require.NoError(t, err)
 
