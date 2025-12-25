@@ -273,7 +273,7 @@ func newMetadata(t testing.TestingT, oldMetadata *compute.Metadata, kvs map[stri
 			Value: &val,
 		}
 
-		items = append(oldMetadata.Items, item)
+		items = append(items, item)
 	}
 
 	newMetadata := &compute.Metadata{
