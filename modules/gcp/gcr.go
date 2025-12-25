@@ -32,7 +32,7 @@ func DeleteGCRRepoE(t testing.TestingT, repo string) error {
 		return fmt.Errorf("Failed to get repo. Got error: %v", err)
 	}
 
-	logger.Default.Logf(t, "Retriving Image Digests %s", gcrrepo)
+	logger.Default.Logf(t, "Retrieving Image Digests %s", gcrrepo)
 	tags, err := gcrgoogle.List(gcrrepo, gcrgoogle.WithAuth(auther))
 	if err != nil {
 		return fmt.Errorf("Failed to list tags for repo %s. Got error: %v", repo, err)
