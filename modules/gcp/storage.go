@@ -171,7 +171,9 @@ func EmptyStorageBucketE(t testing.TestingT, name string) error {
 
 		// purge the object
 		logger.Default.Logf(t, "Deleting storage bucket object %s", objectAttrs.Name)
-		bucket.Object(objectAttrs.Name).Delete(ctx)
+		if err := bucket.Object(objectAttrs.Name).Delete(ctx); err != nil {
+			return err
+		}
 	}
 
 	return nil

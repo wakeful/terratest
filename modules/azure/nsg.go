@@ -18,7 +18,7 @@ type NsgRuleSummaryList struct {
 }
 
 // NsgRuleSummary is a string-based (non-pointer) summary of an NSG rule with several helper methods attached
-// to help with verification of rule configuratoin.
+// to help with verification of rule configuration.
 type NsgRuleSummary struct {
 	Name                       string
 	Description                string

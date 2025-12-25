@@ -189,7 +189,7 @@ func GetVirtualMachineImage(t testing.TestingT, vmName string, resGroupName stri
 	return vmImage
 }
 
-// GetVirtualMachineImageE gets the Image  of the specified Azure Virtual Machine.
+// GetVirtualMachineImageE gets the Image of the specified Azure Virtual Machine.
 func GetVirtualMachineImageE(vmName string, resGroupName string, subscriptionID string) (VMImage, error) {
 	var vmImage VMImage
 
@@ -315,7 +315,7 @@ func GetVirtualMachinesForResourceGroupE(resourceGroupName string, subscriptionI
 	// Get the VMs in the Resource Group.
 	vmDetails := make(map[string]compute.VirtualMachineProperties, len(vms.Values()))
 	for _, v := range vms.Values() {
-		// VM name and machine properties are required for each VM, no nill check required.
+		// VM name and machine properties are required for each VM, no nil check required.
 		vmDetails[*v.Name] = *v.VirtualMachineProperties
 	}
 	return vmDetails, nil
