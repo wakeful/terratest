@@ -165,7 +165,7 @@ func GetECRRepoPolicyE(t testing.TestingT, region string, repo *types.Repository
 // PutECRRepoPolicy puts the given policy for the given ECR repository.
 // This will fail the test and stop execution if there is an error.
 func PutECRRepoPolicy(t testing.TestingT, region string, repo *types.Repository, policy string) {
-	err := PutECRRepoLifecyclePolicyE(t, region, repo, policy)
+	err := PutECRRepoPolicyE(t, region, repo, policy)
 	require.NoError(t, err)
 }
 
