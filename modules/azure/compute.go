@@ -37,7 +37,7 @@ func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesCl
 	return vmClient, nil
 }
 
-// VirtualMachineExists indicates whether the specifcied Azure Virtual Machine exists.
+// VirtualMachineExists indicates whether the specified Azure Virtual Machine exists.
 // This function would fail the test if there is an error.
 func VirtualMachineExists(t testing.TestingT, vmName string, resGroupName string, subscriptionID string) bool {
 	exists, err := VirtualMachineExistsE(vmName, resGroupName, subscriptionID)
@@ -45,7 +45,7 @@ func VirtualMachineExists(t testing.TestingT, vmName string, resGroupName string
 	return exists
 }
 
-// VirtualMachineExistsE indicates whether the specifcied Azure Virtual Machine exists.
+// VirtualMachineExistsE indicates whether the specified Azure Virtual Machine exists.
 func VirtualMachineExistsE(vmName string, resGroupName string, subscriptionID string) (bool, error) {
 	// Get VM Object
 	_, err := GetVirtualMachineE(vmName, resGroupName, subscriptionID)
@@ -58,7 +58,7 @@ func VirtualMachineExistsE(vmName string, resGroupName string, subscriptionID st
 	return true, nil
 }
 
-// GetVirtualMachineNics gets a list of Network Interface names for a specifcied Azure Virtual Machine.
+// GetVirtualMachineNics gets a list of Network Interface names for a specified Azure Virtual Machine.
 // This function would fail the test if there is an error.
 func GetVirtualMachineNics(t testing.TestingT, vmName string, resGroupName string, subscriptionID string) []string {
 	nicList, err := GetVirtualMachineNicsE(vmName, resGroupName, subscriptionID)
@@ -189,7 +189,7 @@ func GetVirtualMachineImage(t testing.TestingT, vmName string, resGroupName stri
 	return vmImage
 }
 
-// GetVirtualMachineImageE gets the Image  of the specified Azure Virtual Machine.
+// GetVirtualMachineImageE gets the Image of the specified Azure Virtual Machine.
 func GetVirtualMachineImageE(vmName string, resGroupName string, subscriptionID string) (VMImage, error) {
 	var vmImage VMImage
 
@@ -315,7 +315,7 @@ func GetVirtualMachinesForResourceGroupE(resourceGroupName string, subscriptionI
 	// Get the VMs in the Resource Group.
 	vmDetails := make(map[string]compute.VirtualMachineProperties, len(vms.Values()))
 	for _, v := range vms.Values() {
-		// VM name and machine properties are required for each VM, no nill check required.
+		// VM name and machine properties are required for each VM, no nil check required.
 		vmDetails[*v.Name] = *v.VirtualMachineProperties
 	}
 	return vmDetails, nil

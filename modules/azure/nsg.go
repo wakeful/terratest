@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// NsgRuleSummaryList holds a colleciton of NsgRuleSummary rules
+// NsgRuleSummaryList holds a collection of NsgRuleSummary rules
 type NsgRuleSummaryList struct {
 	SummarizedRules []NsgRuleSummary
 }
 
 // NsgRuleSummary is a string-based (non-pointer) summary of an NSG rule with several helper methods attached
-// to help with verification of rule configuratoin.
+// to help with verification of rule configuration.
 type NsgRuleSummary struct {
 	Name                       string
 	Description                string
@@ -213,7 +213,7 @@ func (summarizedRule *NsgRuleSummary) AllowsSourcePort(t *testing.T, port string
 	return allowed && (summarizedRule.Access == "Allow")
 }
 
-// portRangeAllowsPort is the internal impelmentation of AllowsSourcePort and AllowsDestinationPort.
+// portRangeAllowsPort is the internal implementation of AllowsSourcePort and AllowsDestinationPort.
 func portRangeAllowsPort(portRange string, port string) (bool, error) {
 	if portRange == "*" {
 		return true, nil
@@ -258,7 +258,7 @@ func parsePortRangeString(rangeString string) (uint16, uint16, error) {
 		return uint16(val), uint16(val), nil
 	}
 
-	// Split the rang into parts and validate
+	// Split the range into parts and validate
 	parts := strings.Split(rangeString, "-")
 	if len(parts) != 2 {
 		return 0, 0, fmt.Errorf("Invalid port range specified; must be of the format '{low port}-{high port}'")

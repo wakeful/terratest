@@ -36,7 +36,7 @@ func NewFailedToParseError(objectType string, objectID string) FailedToParseErro
 	return FailedToParseError{objectType, objectID}
 }
 
-// NotFoundError is returned when an expected object is not found in the search spa
+// NotFoundError is returned when an expected object is not found in the search space
 type NotFoundError struct {
 	objectType  string
 	objectID    string

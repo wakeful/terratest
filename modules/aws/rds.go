@@ -33,7 +33,7 @@ func GetAddressOfRdsInstanceE(t testing.TestingT, dbInstanceID string, awsRegion
 	return aws.ToString(dbInstance.Endpoint.Address), nil
 }
 
-// GetPortOfRdsInstance gets the address of the given RDS Instance in the given region.
+// GetPortOfRdsInstance gets the port of the given RDS Instance in the given region.
 func GetPortOfRdsInstance(t testing.TestingT, dbInstanceID string, awsRegion string) int32 {
 	port, err := GetPortOfRdsInstanceE(t, dbInstanceID, awsRegion)
 	if err != nil {
@@ -42,7 +42,7 @@ func GetPortOfRdsInstance(t testing.TestingT, dbInstanceID string, awsRegion str
 	return port
 }
 
-// GetPortOfRdsInstanceE gets the address of the given RDS Instance in the given region.
+// GetPortOfRdsInstanceE gets the port of the given RDS Instance in the given region.
 func GetPortOfRdsInstanceE(t testing.TestingT, dbInstanceID string, awsRegion string) (int32, error) {
 	dbInstance, err := GetRdsInstanceDetailsE(t, dbInstanceID, awsRegion)
 	if err != nil {

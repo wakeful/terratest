@@ -143,7 +143,7 @@ func FetchRegionalInstanceGroupE(t testing.TestingT, projectID string, region st
 	return &RegionalInstanceGroup{projectID, instanceGroup}, nil
 }
 
-// FetchZonalInstanceGroup queries GCP to return a new instance of the Regional Instance Group type
+// FetchZonalInstanceGroup queries GCP to return a new instance of the Zonal Instance Group type
 func FetchZonalInstanceGroup(t testing.TestingT, projectID string, zone string, name string) *ZonalInstanceGroup {
 	instanceGroup, err := FetchZonalInstanceGroupE(t, projectID, zone, name)
 	if err != nil {
@@ -153,7 +153,7 @@ func FetchZonalInstanceGroup(t testing.TestingT, projectID string, zone string, 
 	return instanceGroup
 }
 
-// FetchZonalInstanceGroup queries GCP to return a new instance of the Regional Instance Group type
+// FetchZonalInstanceGroupE queries GCP to return a new instance of the Zonal Instance Group type
 func FetchZonalInstanceGroupE(t testing.TestingT, projectID string, zone string, name string) (*ZonalInstanceGroup, error) {
 	logger.Default.Logf(t, "Getting Zonal Instance Group %s", name)
 
@@ -243,7 +243,7 @@ func (i *Instance) SetMetadata(t testing.TestingT, metadata map[string]string) {
 	}
 }
 
-// SetLabelsE adds the given metadata map to the existing metadata of the given Compute Instance.
+// SetMetadataE adds the given metadata map to the existing metadata of the given Compute Instance.
 func (i *Instance) SetMetadataE(t testing.TestingT, metadata map[string]string) error {
 	logger.Default.Logf(t, "Adding metadata to instance %s in zone %s", i.Name, i.Zone)
 
@@ -273,7 +273,7 @@ func newMetadata(t testing.TestingT, oldMetadata *compute.Metadata, kvs map[stri
 			Value: &val,
 		}
 
-		items = append(oldMetadata.Items, item)
+		items = append(items, item)
 	}
 
 	newMetadata := &compute.Metadata{

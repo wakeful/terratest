@@ -1,7 +1,6 @@
 package slack
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -51,7 +50,7 @@ func ValidateExpectedSlackMessageE(
 			}
 		}
 	}
-	return fmt.Errorf("still no message")
+	return MessageNotFoundErr{}
 }
 
 func checkMessageContainsText(msg slack.Msg, expectedText string) bool {

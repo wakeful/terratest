@@ -46,7 +46,7 @@ func DeleteStorageBucket(t testing.TestingT, name string) {
 	}
 }
 
-// DeleteStorageBucketE destroys the S3 bucket in the given region with the given name.
+// DeleteStorageBucketE destroys the Google Cloud Storage bucket in the given region with the given name.
 func DeleteStorageBucketE(t testing.TestingT, name string) error {
 	logger.Default.Logf(t, "Deleting bucket %s", name)
 
@@ -171,7 +171,9 @@ func EmptyStorageBucketE(t testing.TestingT, name string) error {
 
 		// purge the object
 		logger.Default.Logf(t, "Deleting storage bucket object %s", objectAttrs.Name)
-		bucket.Object(objectAttrs.Name).Delete(ctx)
+		if err := bucket.Object(objectAttrs.Name).Delete(ctx); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -201,7 +203,7 @@ func AssertStorageBucketExistsE(t testing.TestingT, name string) error {
 	bucket := client.Bucket(name)
 
 	// TODO - the code below attempts to determine whether the storage bucket
-	// exists by making a making a number of API calls, then attemping to
+	// exists by making a number of API calls, then attempting to
 	// list the contents of the bucket. It was adapted from Google's own integration
 	// tests and should be improved once the appropriate API call is added.
 	// For more info see: https://github.com/GoogleCloudPlatform/google-cloud-go/blob/de879f7be552d57556875b8aaa383bce9396cc8c/storage/integration_test.go#L1231
