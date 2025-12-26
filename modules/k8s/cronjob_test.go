@@ -109,7 +109,7 @@ kind: Namespace
 metadata:
   name: %s
 ---
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: cron-job
