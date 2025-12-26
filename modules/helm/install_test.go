@@ -48,11 +48,13 @@ func TestRemoteChartInstall(t *testing.T) {
 	defer k8s.DeleteNamespace(t, kubectlOptions, namespaceName)
 	k8s.CreateNamespace(t, kubectlOptions, namespaceName)
 
-	// Override service type to node port
+	// Override service type to node port and disable PDB (requires policy/v1 API
+	// which may not be available on older k8s clusters)
 	options := &Options{
 		KubectlOptions: kubectlOptions,
 		SetValues: map[string]string{
 			"service.type": "NodePort",
+			"pdb.create":   "false",
 		},
 		Version: remoteChartVersion,
 	}
