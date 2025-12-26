@@ -29,7 +29,7 @@ import (
 const (
 	remoteChartSource  = "https://charts.bitnami.com/bitnami"
 	remoteChartName    = "nginx"
-	remoteChartVersion = "13.2.23"
+	remoteChartVersion = "18.2.0"
 )
 
 // Test that we can install a remote chart (e.g bitnami/nginx)
@@ -160,9 +160,11 @@ func waitForRemoteChartPods(t *testing.T, kubectlOptions *k8s.KubectlOptions, re
 			remoteChartName, releaseName,
 		),
 	}
-	k8s.WaitUntilNumPodsCreated(t, kubectlOptions, filters, podCount, 30, 10*time.Second)
+	// Use longer timeout (60 retries * 10s = 10 min) to handle slower CI environments
+	// and potential resource contention when multiple helm tests run in parallel
+	k8s.WaitUntilNumPodsCreated(t, kubectlOptions, filters, podCount, 60, 10*time.Second)
 	pods := k8s.ListPods(t, kubectlOptions, filters)
 	for _, pod := range pods {
-		k8s.WaitUntilPodAvailable(t, kubectlOptions, pod.Name, 30, 10*time.Second)
+		k8s.WaitUntilPodAvailable(t, kubectlOptions, pod.Name, 60, 10*time.Second)
 	}
 }
