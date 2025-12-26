@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	batchv1 "k8s.io/api/batch/v1"
+	batchv1beta1 "k8s.io/api/batch/v1beta1"
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/require"
@@ -70,13 +70,13 @@ func TestIsCronJobSucceeded(t *testing.T) {
 
 	cases := []struct {
 		title          string
-		cronJob        *batchv1.CronJob
+		cronJob        *batchv1beta1.CronJob
 		expectedResult bool
 	}{
 		{
 			title: "CronJobScheduledContainer",
-			cronJob: &batchv1.CronJob{
-				Status: batchv1.CronJobStatus{
+			cronJob: &batchv1beta1.CronJob{
+				Status: batchv1beta1.CronJobStatus{
 					LastScheduleTime: &metav1.Time{},
 				},
 			},
@@ -84,8 +84,8 @@ func TestIsCronJobSucceeded(t *testing.T) {
 		},
 		{
 			title: "CronJobNotScheduledContainer",
-			cronJob: &batchv1.CronJob{
-				Status: batchv1.CronJobStatus{
+			cronJob: &batchv1beta1.CronJob{
+				Status: batchv1beta1.CronJobStatus{
 					LastScheduleTime: nil,
 				},
 			},
