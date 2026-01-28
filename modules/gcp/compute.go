@@ -262,26 +262,35 @@ func (i *Instance) SetMetadataE(t testing.TestingT, metadata map[string]string) 
 	return nil
 }
 
-// newMetadata takes in a Compute Instance's existing metadata plus a new set of key-value pairs and returns an updated
-// metadata object.
+// newMetadata merges new key-value pairs into existing metadata, preserving unmodified items.
 func newMetadata(t testing.TestingT, oldMetadata *compute.Metadata, kvs map[string]string) *compute.Metadata {
-	items := []*compute.MetadataItems{}
+	itemsMap := make(map[string]*string)
+
+	if oldMetadata != nil {
+		for _, item := range oldMetadata.Items {
+			itemsMap[item.Key] = item.Value
+		}
+	}
 
 	for key, val := range kvs {
-		item := &compute.MetadataItems{
-			Key:   key,
-			Value: &val,
-		}
-
-		items = append(items, item)
+		v := val
+		itemsMap[key] = &v
 	}
 
-	newMetadata := &compute.Metadata{
-		Fingerprint: oldMetadata.Fingerprint,
+	items := make([]*compute.MetadataItems, 0, len(itemsMap))
+	for key, val := range itemsMap {
+		items = append(items, &compute.MetadataItems{Key: key, Value: val})
+	}
+
+	fingerprint := ""
+	if oldMetadata != nil {
+		fingerprint = oldMetadata.Fingerprint
+	}
+
+	return &compute.Metadata{
+		Fingerprint: fingerprint,
 		Items:       items,
 	}
-
-	return newMetadata
 }
 
 // Add the given public SSH key to the Compute Instance. Users can SSH in with the given username.
