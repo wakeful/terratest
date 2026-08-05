@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/core/v2/logger"
@@ -35,13 +36,15 @@ type KubectlOptions struct {
 	// functions, and only after the node's own ExternalIP has been checked, so most callers can leave it nil.
 	// It is skipped when serializing options, since a function cannot be represented as JSON.
 	NodePublicIPLookup NodePublicIPLookup `json:"-"`
-	RestConfig         *rest.Config
-	Logger             *logger.Logger
-	ContextName        string
-	ConfigPath         string
-	Namespace          string
-	RequestTimeout     time.Duration
-	InClusterAuth      bool
+	// RestConfig is not serialized. A rest.Config cannot be rebuilt from JSON, so rather than drop it silently
+	// MarshalJSON refuses to encode options that carry one. See ErrRestConfigNotSerializable.
+	RestConfig     *rest.Config `json:"-"`
+	Logger         *logger.Logger
+	ContextName    string
+	ConfigPath     string
+	Namespace      string
+	RequestTimeout time.Duration
+	InClusterAuth  bool
 }
 
 // NewKubectlOptions will return a pointer to new instance of KubectlOptions with the configured options
@@ -84,4 +87,21 @@ func (kubectlOptions *KubectlOptions) GetConfigPath(t testing.TestingT) (string,
 	}
 
 	return kubeConfigPath, nil
+}
+
+// MarshalJSON implements json.Marshaler.
+//
+// It exists to make the loss explicit. RestConfig and NodePublicIPLookup cannot be encoded, and encoding/json
+// rejects their func-typed contents outright, so both are tagged json:"-". Dropping NodePublicIPLookup is benign,
+// since a missing lookup degrades to a visible node resolution failure. Dropping RestConfig is not, so this
+// returns ErrRestConfigNotSerializable instead of writing options that would silently target the wrong cluster.
+func (options KubectlOptions) MarshalJSON() ([]byte, error) {
+	if options.RestConfig != nil {
+		return nil, ErrRestConfigNotSerializable
+	}
+
+	// alias drops the MarshalJSON method, so this does not recurse.
+	type alias KubectlOptions
+
+	return json.Marshal(alias(options))
 }
